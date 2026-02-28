@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Result{% endblock %}
+
+{% block content %}
+<section class="result-shell">
+    <h2 class="page-title">Your Score</h2>
+    {% if subject and unit %}
+    <p>{{ subject }} | Semester {{ semester }} | {{ unit }}</p>
+    {% endif %}
+    <div class="quiz-box result-card">
+        <p>You scored {{ score }} out of {{ total }}</p>
+        <p>Percentage: {{ percentage }}%</p>
+        <p class="result-status {{ 'status-pass' if result_status == 'Pass' else 'status-fail' }}">
+            Result: {{ result_status }}
+        </p>
+    </div>
+    <a href="/subjects" class="btn result-btn">Back to Subjects</a>
+</section>
+{% endblock %}

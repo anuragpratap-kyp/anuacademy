@@ -1,0 +1,196 @@
+[
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit I - Atomic Structure",
+    "question": "Which principle states that exact position and momentum cannot be measured simultaneously?",
+    "options": ["Pauli Exclusion Principle", "Hund's Rule", "Heisenberg Uncertainty Principle", "Aufbau Principle"],
+    "answer": "Heisenberg Uncertainty Principle"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit II - Elementary Quantum Mechanics",
+    "question": "Black-body radiation is best explained by which theory?",
+    "options": ["Bohr model", "Planck's quantum theory", "Dalton atomic theory", "Valence bond theory"],
+    "answer": "Planck's quantum theory"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit III - Molecular Spectroscopy",
+    "question": "Which spectrum is commonly used to study rotational transitions?",
+    "options": ["Microwave spectrum", "UV spectrum", "X-ray spectrum", "Flame spectrum"],
+    "answer": "Microwave spectrum"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit IV - UV-Visible Spectroscopy",
+    "question": "In UV-Visible spectroscopy, lambda max represents:",
+    "options": ["Minimum absorbance", "Maximum absorbance wavelength", "Boiling point", "Molecular weight"],
+    "answer": "Maximum absorbance wavelength"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit V - Infrared Spectroscopy",
+    "question": "IR spectroscopy mainly studies:",
+    "options": ["Nuclear reactions", "Molecular vibrations", "Electron spin", "Crystal defects"],
+    "answer": "Molecular vibrations"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit VI - 1H-NMR Spectroscopy (PMR)",
+    "question": "Chemical shift in 1H NMR is usually reported in:",
+    "options": ["ppm", "Hz only", "cm-1", "nm"],
+    "answer": "ppm"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit VII - Introduction to Mass Spectrometry",
+    "question": "In mass spectrometry, m/z stands for:",
+    "options": ["mass to charge ratio", "mole to zone ratio", "mass to zero ratio", "molecule to zinc ratio"],
+    "answer": "mass to charge ratio"
+  },
+  {
+    "subject": "Chemistry",
+    "semester": 4,
+    "unit": "Unit VIII - Separation Techniques",
+    "question": "Which technique is commonly used to separate mixture components on a stationary phase?",
+    "options": ["Titration", "Chromatography", "Distillation only", "Neutralization"],
+    "answer": "Chromatography"
+  },
+
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of crop plants mainly means:",
+    "options": ["Wild extinction", "Human selection for useful traits", "Only greenhouse growth", "Genetic drift only"],
+    "answer": "Human selection for useful traits"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit II - Botany of oils, fibers, timber yielding plants and dyes",
+    "question": "Cotton is primarily a:",
+    "options": ["Timber crop", "Fiber crop", "Dye crop", "Root crop"],
+    "answer": "Fiber crop"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit III - Commercial production of flowers, vegetables and fruits",
+    "question": "Hydroponics refers to cultivation of plants:",
+    "options": ["Only in deserts", "Without soil using nutrient solution", "Only in clay soil", "Only in rainfed fields"],
+    "answer": "Without soil using nutrient solution"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit IV - IPR and Traditional Knowledge",
+    "question": "TRIPS agreement is related to:",
+    "options": ["Weather prediction", "Intellectual Property Rights", "Forest fire control", "Plant irrigation"],
+    "answer": "Intellectual Property Rights"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit V - Ethnobotany",
+    "question": "Ethnobotany studies:",
+    "options": ["Plant diseases only", "Relationship between people and plants", "Only algae taxonomy", "Only fossil plants"],
+    "answer": "Relationship between people and plants"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit VI - Medicinal aspects",
+    "question": "Tulsi (Ocimum sanctum) is widely known as a:",
+    "options": ["Industrial dye plant", "Medicinal plant", "Timber tree", "Aquatic weed"],
+    "answer": "Medicinal plant"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit VII - Pharmacognosy",
+    "question": "Pharmacognosy mainly deals with:",
+    "options": ["Synthetic polymers", "Crude drugs from natural sources", "Rocket fuel plants", "Only fungal genetics"],
+    "answer": "Crude drugs from natural sources"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit VIII - Herbal Preparations and Phytochemistry",
+    "question": "Alkaloids, flavonoids and terpenes are examples of:",
+    "options": ["Primary school terms", "Phytochemicals", "Mineral salts", "Plant hormones only"],
+    "answer": "Phytochemicals"
+  },
+
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit I - Principles of Gene Manipulation",
+    "question": "Restriction enzymes are used to:",
+    "options": ["Cut DNA at specific sequences", "Synthesize proteins directly", "Measure blood pressure", "Destroy RNA only"],
+    "answer": "Cut DNA at specific sequences"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit II - Applications of Genetic Engineering",
+    "question": "A transgenic organism is one that:",
+    "options": ["Has no DNA", "Contains foreign gene(s)", "Lives only in water", "Cannot reproduce"],
+    "answer": "Contains foreign gene(s)"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit III - DNA Diagnostics",
+    "question": "PCR in diagnostics is used for:",
+    "options": ["Amplifying DNA", "Protein digestion", "Cell staining", "Lipid extraction"],
+    "answer": "Amplifying DNA"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit IV - Immune System and its Components",
+    "question": "Antibodies are produced by:",
+    "options": ["RBCs", "B-lymphocytes", "Platelets", "Neutrophils only"],
+    "answer": "B-lymphocytes"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit V - Biostatistics I",
+    "question": "Which is a measure of central tendency?",
+    "options": ["Mean", "Variance", "Standard deviation", "Range"],
+    "answer": "Mean"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit VI - Biostatistics II",
+    "question": "Student's t-test is generally used to:",
+    "options": ["Compare means", "Sequence DNA", "Measure pH", "Identify tissues"],
+    "answer": "Compare means"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit VII - Basics of Computers",
+    "question": "CPU stands for:",
+    "options": ["Central Processing Unit", "Computer Primary Unit", "Central Program Utility", "Control Processing Utility"],
+    "answer": "Central Processing Unit"
+  },
+  {
+    "subject": "Zoology",
+    "semester": 4,
+    "unit": "Unit VIII - Bioinformatics",
+    "question": "BLAST is commonly used for:",
+    "options": ["Sequence alignment search", "Blood analysis", "Image compression", "Protein purification"],
+    "answer": "Sequence alignment search"
+  }
+]

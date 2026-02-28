@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+{% block title %}MCQs{% endblock %}
+
+{% block content %}
+<section class="quiz-shell">
+    <h2 class="page-title">{{ subject }} - Semester {{ semester }} - {{ unit }} MCQs</h2>
+
+    {% if questions|length == 0 %}
+    <div class="quiz-box">
+        <p>No questions available for this subject and semester.</p>
+        <a href="/subjects" class="btn">Back to Subjects</a>
+    </div>
+    {% else %}
+    <div id="quizIntro" class="quiz-box" style="text-align:center;">
+        <p><strong>Enter Your Details</strong></p>
+        <div class="student-form">
+            <input type="text" id="studentName" placeholder="Your Name" maxlength="80">
+            <input type="tel" id="studentMobile" placeholder="Mobile Number" maxlength="15">
+        </div>
+        <p><strong>{{ questions|length }} questions</strong></p>
+        <p>Total Time: <strong>{{ ((questions|length) * 30) // 60 }}m {{ ((questions|length) * 30) % 60 }}s</strong></p>
+        <p>Press start when you are ready.</p>
+        <button type="button" class="btn quiz-submit-btn" id="startQuizBtn">Start MCQs</button>
+    </div>
+
+    <div id="quizStage" style="display:none;">
+        <div class="quiz-meta">
+            <p id="progressText" class="quiz-progress"><strong>Question 1 / {{ questions|length }}</strong></p>
+            <div class="quiz-timer-wrap">
+                <span class="timer-label">Time Left</span>
+                <span id="timerText" class="quiz-timer">00:00</span>
+            </div>
+        </div>
+
+        <div class="timer-track" aria-hidden="true">
+            <div id="timerBar" class="timer-fill"></div>
+        </div>
+
+        <form method="POST" id="quizForm">
+            <input type="hidden" name="student_name" id="studentNameHidden">
+            <input type="hidden" name="student_mobile" id="studentMobileHidden">
+            {% for q in questions %}
+            {% set q_index = loop.index0 %}
+            <div class="quiz-box question-step" data-step="{{ q_index }}" style="display: none;">
+                <p><strong>Q{{ loop.index }}:</strong> {{ q.question }}</p>
+                <div class="options-group">
+                    {% for opt in q.options %}
+                    <label class="option-item">
+                        <input type="radio" name="q{{ q_index }}" value="{{ opt }}"> {{ opt }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="quiz-actions">
+                <button type="button" class="btn quiz-nav-btn" id="prevBtn">Previous</button>
+                <button type="button" class="btn quiz-nav-btn" id="nextBtn">Next</button>
+                <button type="submit" class="btn quiz-submit-btn" id="submitBtn" style="display:none;">Submit MCQs</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const intro = document.getElementById("quizIntro");
+        const quizStage = document.getElementById("quizStage");
+        const startQuizBtn = document.getElementById("startQuizBtn");
+        const steps = document.querySelectorAll(".question-step");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const submitBtn = document.getElementById("submitBtn");
+        const progressText = document.getElementById("progressText");
+        const timerText = document.getElementById("timerText");
+        const timerBar = document.getElementById("timerBar");
+        const quizForm = document.getElementById("quizForm");
+        const studentName = document.getElementById("studentName");
+        const studentMobile = document.getElementById("studentMobile");
+        const studentNameHidden = document.getElementById("studentNameHidden");
+        const studentMobileHidden = document.getElementById("studentMobileHidden");
+
+        let currentStep = 0;
+        let isAutoSubmit = false;
+        let timerInterval = null;
+        const totalSeconds = {{ (questions|length) * 30 }};
+        let remainingSeconds = totalSeconds;
+
+        function formatTime(sec) {
+            const mm = String(Math.floor(sec / 60)).padStart(2, "0");
+            const ss = String(sec % 60).padStart(2, "0");
+            return `${mm}:${ss}`;
+        }
+
+        function showStep(index) {
+            steps.forEach((s, i) => s.style.display = i === index ? "block" : "none");
+            prevBtn.style.display = index === 0 ? "none" : "inline-block";
+            nextBtn.style.display = index === steps.length - 1 ? "none" : "inline-block";
+            submitBtn.style.display = index === steps.length - 1 ? "inline-block" : "none";
+            progressText.innerHTML = `<strong>Question ${index + 1} / ${steps.length}</strong>`;
+        }
+
+        function isAnswered(stepIndex) {
+            return document.querySelector(`input[name="q${stepIndex}"]:checked`) !== null;
+        }
+
+        function updateTimerUI() {
+            timerText.textContent = formatTime(remainingSeconds);
+            const percent = totalSeconds > 0 ? (remainingSeconds / totalSeconds) * 100 : 0;
+            timerBar.style.width = `${percent}%`;
+
+            if (remainingSeconds <= 30) {
+                timerText.classList.add("timer-warning");
+                timerBar.classList.add("timer-warning-fill");
+            }
+        }
+
+        function startTimer() {
+            updateTimerUI();
+            timerInterval = setInterval(() => {
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    isAutoSubmit = true;
+                    quizForm.submit();
+                    return;
+                }
+                remainingSeconds--;
+                updateTimerUI();
+            }, 1000);
+        }
+
+        startQuizBtn.addEventListener("click", () => {
+            const nameValue = studentName.value.trim();
+            const mobileValue = studentMobile.value.trim();
+            const mobileOk = /^[0-9]{10,15}$/.test(mobileValue);
+
+            if (!nameValue) {
+                alert("Please enter your name.");
+                studentName.focus();
+                return;
+            }
+            if (!mobileOk) {
+                alert("Please enter a valid mobile number (10-15 digits).");
+                studentMobile.focus();
+                return;
+            }
+
+            studentNameHidden.value = nameValue;
+            studentMobileHidden.value = mobileValue;
+
+            intro.style.display = "none";
+            quizStage.style.display = "block";
+            showStep(currentStep);
+            startTimer();
+        });
+
+        nextBtn.addEventListener("click", () => {
+            if (!isAnswered(currentStep)) {
+                alert("Please select an option before going next.");
+                return;
+            }
+            currentStep++;
+            showStep(currentStep);
+        });
+
+        prevBtn.addEventListener("click", () => {
+            currentStep--;
+            showStep(currentStep);
+        });
+
+        quizForm.addEventListener("submit", (e) => {
+            if (!isAutoSubmit && !isAnswered(currentStep)) {
+                e.preventDefault();
+                alert("Please select an option before submitting.");
+            }
+        });
+    </script>
+    {% endif %}
+</section>
+{% endblock %}

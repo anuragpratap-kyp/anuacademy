@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Subjects{% endblock %}
+
+{% block content %}
+<section class="subjects-section">
+    <div class="section-header">
+        <h2>Select Subject</h2>
+        <p>Choose a subject to view unit-wise MCQs.</p>
+    </div>
+
+    <div class="card-container">
+        <a href="/units/Chemistry/{{ semester|default(4) }}" class="subject-card">
+            <h3>Chemistry</h3>
+            <p>Organic, Inorganic &amp; Physical Chemistry</p>
+        </a>
+
+        <a href="/units/Zoology/{{ semester|default(4) }}" class="subject-card">
+            <h3>Zoology</h3>
+            <p>Evolution, Ecology, Animal Physiology</p>
+        </a>
+
+        <a href="/units/Botany/{{ semester|default(4) }}" class="subject-card">
+            <h3>Botany</h3>
+            <p>Plant Physiology, Genetics, Taxonomy</p>
+        </a>
+    </div>
+</section>
+{% endblock %}

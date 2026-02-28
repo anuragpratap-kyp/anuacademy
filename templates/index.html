@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-text">
+            <h1>Master Your BSc Exams</h1>
+            <p>
+                Practice unlimited MCQs semester-wise with instant results
+                and detailed performance tracking.
+            </p>
+            <a href="/subjects" class="btn">Start Practicing</a>
+        </div>
+
+        <div class="hero-image">
+            <img src="{{ url_for('static', filename='hero.png') }}" alt="Study Illustration">
+        </div>
+    </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section class="features">
+    <div class="section-title">
+        <h2>Why Choose SmartMCQ?</h2>
+        <p>Everything you need to crack your semester exams.</p>
+    </div>
+
+    <div class="feature-box">
+        <div class="feature">
+            <h3>Instant Results</h3>
+            <p>See your score immediately after submitting MCQs.</p>
+        </div>
+
+        <div class="feature">
+            <h3>Performance Analytics</h3>
+            <p>Track weak areas and improve topic-wise.</p>
+        </div>
+
+        <div class="feature">
+            <h3>Semester Wise Practice</h3>
+            <p>Structured subject-wise questions for all semesters.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SUBJECT PREVIEW ================= -->
+<section class="subjects-preview">
+    <div class="section-title">
+        <h2>Popular Subjects</h2>
+        <p>Start with your core subjects.</p>
+    </div>
+
+    <div class="card-container">
+        <div class="card">
+            <h3>Botany</h3>
+            <p>Plant Physiology, Genetics, Taxonomy</p>
+            <a href="/units/Botany/4" class="card-btn">Explore</a>
+        </div>
+
+        <div class="card">
+            <h3>Zoology</h3>
+            <p>Evolution, Ecology, Animal Physiology</p>
+            <a href="/units/Zoology/4" class="card-btn">Explore</a>
+        </div>
+
+        <div class="card">
+            <h3>Chemistry</h3>
+            <p>Organic, Inorganic &amp; Physical Chemistry</p>
+            <a href="/units/Chemistry/4" class="card-btn">Explore</a>
+        </div>
+    </div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="stats">
+    <div class="stat">
+        <h3>1000+</h3>
+        <p>Questions Available</p>
+    </div>
+
+    <div class="stat">
+        <h3>3+</h3>
+        <p>Core Subjects</p>
+    </div>
+
+    <div class="stat">
+        <h3>All Semesters</h3>
+        <p>Coming Soon</p>
+    </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta">
+    <div class="cta-box">
+        <h2>Ready to Boost Your Score?</h2>
+        <p>Start practicing now and improve your performance.</p>
+        <a href="/subjects" class="btn">Start Now</a>
+    </div>
+</section>
+
+{% endblock %}

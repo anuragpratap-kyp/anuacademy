@@ -1,0 +1,1017 @@
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    line-height: 1.6;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 8%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #00f2fe;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+    padding: 100px 8%;
+}
+
+.hero-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.hero-text {
+    max-width: 500px;
+}
+
+.hero-text h1 {
+    font-size: 52px;
+    margin-bottom: 20px;
+}
+
+.hero-text p {
+    font-size: 18px;
+    opacity: 0.85;
+}
+
+.hero-image img {
+    width: 400px;
+    max-width: 100%;
+}
+
+/* ===== BUTTON ===== */
+.btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 14px 30px;
+    border-radius: 30px;
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-title h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+/* ===== FEATURES ===== */
+.features {
+    padding: 80px 8%;
+}
+
+.feature-box {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.feature {
+    width: 280px;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    transition: 0.3s;
+}
+
+.feature:hover {
+    transform: translateY(-10px);
+}
+
+/* ===== SUBJECT CARDS ===== */
+.subjects-preview {
+    padding: 80px 8%;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.card {
+    width: 280px;
+    padding: 40px 30px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    text-align: center;
+    transition: 0.4s;
+}
+
+.card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+
+.card-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    background: #00f2fe;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* ===== STATS ===== */
+.stats {
+    padding: 80px 8%;
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.stat h3 {
+    font-size: 40px;
+    color: #00f2fe;
+}
+
+/* ===== CTA ===== */
+.cta {
+    padding: 100px 8%;
+    text-align: center;
+}
+
+.cta-box {
+    padding: 60px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    padding: 30px;
+    text-align: center;
+    background: rgba(0,0,0,0.5);
+    margin-top: 50px;
+}
+footer{
+    text-align: center;
+    font-size: 20px;
+    background-color: black;
+}
+/* ===== SEMESTER PAGE ===== */
+
+.semester-section {
+    padding: 100px 8%;
+    text-align: center;
+}
+
+.semester-card {
+    width: 280px;
+    padding: 40px 30px;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    transition: 0.4s;
+}
+
+.semester-card h3 {
+    margin-bottom: 10px;
+}
+
+.semester-card p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.semester-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    color: black;
+}
+/* Dashboard Section */
+.dashboard-section {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.dashboard-header h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.dashboard-header p {
+    color: #ccc;
+    margin-bottom: 40px;
+}
+
+/* Stats Container */
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* Stat Card */
+.stat-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 35px 50px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    transition: 0.3s ease;
+    width: 250px;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.stat-icon {
+    font-size: 35px;
+    margin-bottom: 15px;
+}
+
+.stat-card h3 {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: bold;
+    color: #00c9a7;
+}
+/* Contact Section */
+.contact-section {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.contact-header h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.contact-header p {
+    color: #ccc;
+    margin-bottom: 40px;
+}
+
+/* Contact Container */
+.contact-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* Contact Form */
+.contact-form {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255,255,255,0.08);
+    padding: 35px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: left;
+}
+
+/* Input Group */
+.input-group label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+    color: #ddd;
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    transition: 0.3s ease;
+}
+
+/* Focus Effect */
+.contact-form input:focus,
+.contact-form textarea:focus {
+    background: rgba(255,255,255,0.25);
+    box-shadow: 0 0 0 2px #00c9a7;
+}
+
+/* Button */
+.contact-form .btn {
+    margin-top: 10px;
+    text-align: center;
+}
+/* ===== Contact Page Upgrade ===== */
+
+/* Section spacing */
+.contact-section {
+    padding: 70px 20px;
+}
+
+/* Header improvement */
+.contact-header p {
+    color: #ccc;
+    margin-bottom: 40px;
+}
+
+/* Form card design */
+.contact-form {
+    max-width: 520px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 35px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    gap: 20px;
+}
+
+/* Input group spacing */
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Improve inputs */
+.contact-form input,
+.contact-form textarea {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    transition: 0.3s ease;
+}
+
+/* Focus effect */
+.contact-form input:focus,
+.contact-form textarea:focus {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 2px #00c9a7;
+}
+
+/* Button hover smooth */
+.contact-form .btn:hover {
+    transform: scale(1.05);
+}
+/* ===== About Section ===== */
+.about-section {
+    padding: 70px 20px;
+    text-align: center;
+}
+
+/* Header */
+.about-header h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.about-header p {
+    color: #ccc;
+    margin-bottom: 50px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Content Layout */
+.about-content {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+/* Left Text Section */
+.about-text {
+    max-width: 500px;
+    text-align: left;
+}
+
+.about-text h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #00c9a7;
+}
+
+.about-text p {
+    color: #ddd;
+    line-height: 1.6;
+}
+
+/* Feature Cards */
+.about-features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Individual Card */
+.feature-card {
+    background: rgba(255,255,255,0.08);
+    padding: 20px;
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+    width: 280px;
+    transition: 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.15);
+}
+
+.feature-card h4 {
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: #ccc;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .about-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .about-text {
+        text-align: center;
+    }
+}
+/* ===== SUBJECTS PAGE ===== */
+
+.subjects-section {
+    padding: 80px 8%;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.section-header p {
+    color: #ccc;
+    margin-bottom: 50px;
+}
+
+.subject-card {
+    width: 280px;
+    padding: 35px 25px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    text-decoration: none;
+    color: white;
+    transition: 0.3s ease;
+}
+
+.subject-card h3 {
+    margin-bottom: 10px;
+}
+
+.subject-card p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.subject-card:hover {
+    transform: translateY(-10px);
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    color: black;
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media(max-width: 768px) {
+
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero-text h1 {
+        font-size: 38px;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+/* ===== QUIZ PAGE ===== */
+.quiz-shell {
+    padding: 50px 8% 70px;
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.page-title {
+    margin-bottom: 18px;
+}
+
+.quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.quiz-progress {
+    font-size: 18px;
+    color: #dff7ff;
+}
+
+.quiz-timer-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    padding: 8px 14px;
+}
+
+.timer-label {
+    color: #d0e7ef;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+}
+
+.quiz-timer {
+    font-size: 18px;
+    font-weight: 700;
+    color: #66ffe0;
+    min-width: 60px;
+    text-align: right;
+}
+
+.timer-warning {
+    color: #ffd166;
+}
+
+.timer-track {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+
+.timer-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #35f5a5, #27c9ff);
+    transition: width 1s linear;
+}
+
+.timer-warning-fill {
+    background: linear-gradient(90deg, #ffca3a, #ff7b54);
+}
+
+.quiz-box {
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 18px;
+    padding: 24px 22px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
+}
+
+.quiz-box p {
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.options-group {
+    display: grid;
+    gap: 12px;
+}
+
+.option-item {
+    display: block;
+    padding: 11px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.option-item:hover {
+    transform: translateX(4px);
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(111, 239, 255, 0.6);
+}
+
+.option-item input[type="radio"] {
+    margin-right: 9px;
+    accent-color: #28e2de;
+}
+
+.quiz-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.quiz-nav-btn,
+.quiz-submit-btn {
+    border: none;
+    cursor: pointer;
+}
+
+.quiz-submit-btn {
+    background: linear-gradient(45deg, #37f17f, #31d0ff);
+}
+
+@media(max-width: 768px) {
+    .quiz-shell {
+        padding: 36px 5% 56px;
+    }
+
+    .quiz-meta {
+        align-items: flex-start;
+    }
+
+    .quiz-progress {
+        font-size: 16px;
+    }
+
+    .quiz-box p {
+        font-size: 18px;
+    }
+
+    .quiz-actions {
+        justify-content: stretch;
+    }
+
+    .quiz-actions .btn {
+        width: 100%;
+        text-align: center;
+        margin-top: 0;
+    }
+}
+
+/* ===== RESULT PAGE ===== */
+.result-shell {
+    min-height: 62vh;
+    padding: 56px 8% 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.result-shell .page-title {
+    margin-bottom: 18px;
+}
+
+.result-card {
+    width: min(560px, 100%);
+}
+
+.result-card p {
+    margin-bottom: 0;
+}
+
+.result-btn {
+    margin-top: 22px;
+}
+
+.result-status {
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.status-pass {
+    color: #65ff9f;
+}
+
+.status-fail {
+    color: #ff6b6b;
+}
+
+/* ===== FOOTER FIX (GLOBAL) ===== */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    margin-top: auto;
+    width: 100%;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    color: #d5eef6;
+    background: rgba(0, 0, 0, 0.45);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(6px);
+}
+
+@media(max-width: 768px) {
+    footer {
+        font-size: 14px;
+        padding: 14px 12px;
+    }
+}
+
+/* ===== SEMESTER AVAILABILITY ===== */
+.coming-soon-card {
+    opacity: 0.78;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.24);
+}
+
+.coming-soon-card p {
+    color: #ffd166;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.coming-soon-card:hover {
+    transform: none;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+.active-semester-card p {
+    font-weight: 600;
+}
+
+/* ===== THEME REFRESH ===== */
+:root {
+    --bg-top: #0b1f2a;
+    --bg-mid: #123246;
+    --bg-bottom: #1d4f63;
+    --text-main: #f4fbff;
+    --text-soft: #c9e3ef;
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --card-border: rgba(255, 255, 255, 0.18);
+    --accent-a: #22d3ee;
+    --accent-b: #38bdf8;
+    --accent-c: #34d399;
+}
+
+body {
+    background:
+        radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.16), transparent 36%),
+        radial-gradient(circle at 84% 14%, rgba(52, 211, 153, 0.12), transparent 34%),
+        linear-gradient(145deg, var(--bg-top), var(--bg-mid), var(--bg-bottom));
+    color: var(--text-main);
+}
+
+.navbar {
+    background: rgba(6, 22, 31, 0.62);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.logo {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.logo:hover {
+    transform: translateY(-1px);
+}
+
+.logo-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    color: #e6fbff;
+    background: linear-gradient(145deg, rgba(34, 211, 238, 0.35), rgba(56, 189, 248, 0.25));
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 8px 18px rgba(3, 15, 26, 0.32);
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.logo-main {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    background: linear-gradient(45deg, #8cefff, #3ecbff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.logo-sub {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+    color: rgba(228, 248, 255, 0.88);
+}
+
+.logo:hover .logo-main {
+    background: linear-gradient(45deg, #b7fff3, #6fd7ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+@media(max-width: 768px) {
+    .logo {
+        gap: 8px;
+    }
+
+    .logo-mark {
+        width: 30px;
+        height: 30px;
+        font-size: 11px;
+    }
+
+    .logo-main {
+        font-size: 18px;
+    }
+
+    .logo-sub {
+        font-size: 9px;
+        letter-spacing: 1.4px;
+    }
+}
+
+.nav-links a {
+    color: #eaf8ff;
+}
+
+.nav-links a:hover {
+    color: #66e6ff;
+}
+
+.btn,
+.card-btn {
+    background: linear-gradient(45deg, var(--accent-a), var(--accent-b));
+    color: #062232;
+}
+
+.btn:hover,
+.card-btn:hover {
+    box-shadow: 0 12px 30px rgba(10, 22, 30, 0.4);
+}
+
+.feature,
+.card,
+.semester-card,
+.subject-card,
+.stat-card,
+.quiz-box,
+.contact-form,
+.feature-card,
+.cta-box {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+}
+
+.section-title p,
+.section-header p,
+.dashboard-header p,
+.about-header p,
+.about-text p,
+.feature-card p {
+    color: var(--text-soft);
+}
+
+.stat-number {
+    color: #5eead4;
+}
+
+.quiz-submit-btn {
+    background: linear-gradient(45deg, var(--accent-c), var(--accent-a));
+}
+
+footer {
+    background: rgba(5, 18, 28, 0.62);
+    color: #dff4ff;
+}
+
+.student-form {
+    display: grid;
+    gap: 10px;
+    margin: 12px auto 16px;
+    max-width: 420px;
+}
+
+.student-form input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: #eaf8ff;
+    outline: none;
+}
+
+.student-form input:focus {
+    border-color: #66e6ff;
+    box-shadow: 0 0 0 3px rgba(102, 230, 255, 0.18);
+}

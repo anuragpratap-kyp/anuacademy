@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Units{% endblock %}
+
+{% block content %}
+<section class="subjects-section">
+    <div class="section-header">
+        <h2>{{ subject }} - Semester {{ semester }}</h2>
+        <p>Select a unit to start the MCQs.</p>
+    </div>
+
+    <div class="card-container">
+        {% if units %}
+            {% for unit_name in units %}
+            <a href="{{ url_for('quiz', subject=subject, semester=semester, unit=unit_name) }}" class="subject-card">
+                <h3>{{ unit_name }}</h3>
+                <p>Start unit-wise MCQs</p>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div class="subject-card coming-soon-card" style="cursor: default;">
+                <h3>No Units Available</h3>
+                <p>Add questions for this subject to generate units.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="text-align:center; margin-top: 24px;">
+        <a href="/subjects" class="btn">Back to Subjects</a>
+    </div>
+</section>
+{% endblock %}
