@@ -15,6 +15,8 @@ DEFAULT_DB_PATH = Path(__file__).with_name("quiz_history.db")
 DB_PATH = Path(os.environ.get("DB_PATH", str(DEFAULT_DB_PATH)))
 DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip()
 QUESTIONS_PATH = Path(__file__).with_name("questions.json")
+GALLERY_DIR = Path(__file__).with_name("static") / "gallery"
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 # Load questions from JSON
 with QUESTIONS_PATH.open(encoding="utf-8") as f:
@@ -24,6 +26,17 @@ with QUESTIONS_PATH.open(encoding="utf-8") as f:
 def load_questions():
     with QUESTIONS_PATH.open(encoding="utf-8") as f:
         return json.load(f)
+
+
+def get_gallery_images():
+    if not GALLERY_DIR.exists():
+        return []
+
+    images = []
+    for file_path in sorted(GALLERY_DIR.iterdir(), key=lambda p: p.name.lower()):
+        if file_path.is_file() and file_path.suffix.lower() in IMAGE_EXTENSIONS:
+            images.append(f"gallery/{file_path.name}")
+    return images
 
 
 SYLLABUS_UNITS = {
@@ -600,7 +613,8 @@ def dashboard():
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    gallery_images = get_gallery_images()
+    return render_template("about.html", gallery_images=gallery_images)
 
 
 @app.route("/contact")

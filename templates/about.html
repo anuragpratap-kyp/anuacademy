@@ -29,21 +29,40 @@
 
         <div class="about-features">
             <div class="feature-card">
-                <h4>📘 Semester-wise MCQs</h4>
+                <h4>Semester-wise MCQs</h4>
                 <p>Practice questions organized by semester for better preparation.</p>
             </div>
 
             <div class="feature-card">
-                <h4>📊 Performance Tracking</h4>
+                <h4>Performance Tracking</h4>
                 <p>Monitor your MCQ attempts and average score easily.</p>
             </div>
 
             <div class="feature-card">
-                <h4>🚀 Easy to Use</h4>
+                <h4>Easy to Use</h4>
                 <p>Clean interface designed for smooth and distraction-free learning.</p>
             </div>
         </div>
 
+    </div>
+
+    <div class="about-gallery">
+        <h3>Gallery</h3>
+        <p>Add your academy photos here. Replace image paths anytime.</p>
+
+        <div class="gallery-grid">
+            {% if gallery_images %}
+                {% for image_path in gallery_images %}
+                <div class="gallery-card">
+                    <img src="{{ url_for('static', filename=image_path) }}" alt="Gallery photo {{ loop.index }}">
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="gallery-card">
+                <img src="{{ url_for('static', filename='hero.png') }}" alt="Gallery placeholder">
+            </div>
+            {% endif %}
+        </div>
     </div>
 
 </section>
