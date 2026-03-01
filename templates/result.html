@@ -13,7 +13,22 @@
         <p class="result-status {{ 'status-pass' if result_status == 'Pass' else 'status-fail' }}">
             Result: {{ result_status }}
         </p>
+        {% if subject_rank %}
+        <p><strong>Your Subject Rank:</strong> {{ subject_rank }} / {{ subject_total_students }}</p>
+        <p><strong>Subject Percentile:</strong> {{ subject_percentile }}%</p>
+        {% endif %}
+        {% if overall_rank %}
+        <p><strong>Your Overall Rank:</strong> {{ overall_rank }} / {{ overall_total_students }}</p>
+        <p><strong>Overall Percentile:</strong> {{ overall_percentile }}%</p>
+        {% endif %}
     </div>
-    <a href="/subjects" class="btn result-btn">Back to Subjects</a>
+    <div class="result-actions">
+        {% if subject %}
+        <a href="{{ url_for('dashboard', subject=subject) }}" class="btn result-btn">View Leaderboard</a>
+        {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn result-btn">View Leaderboard</a>
+        {% endif %}
+        <a href="/subjects" class="btn result-btn">Back to Subjects</a>
+    </div>
 </section>
 {% endblock %}

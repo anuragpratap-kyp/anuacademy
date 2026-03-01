@@ -17,14 +17,20 @@
                 <span class="logo-sub">Academy</span>
             </span>
         </a>
-        <ul class="nav-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/semesters">Semesters</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
+        <button class="nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primaryNav">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-links" id="primaryNav">
+            <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+            <li><a href="/semesters" class="{% if request.path.startswith('/semesters') %}active{% endif %}">Semesters</a></li>
+            <li><a href="/dashboard" class="{% if request.path.startswith('/dashboard') %}active{% endif %}">Dashboard</a></li>
+            <li><a href="/about" class="{% if request.path.startswith('/about') %}active{% endif %}">About</a></li>
+            <li><a href="/contact" class="{% if request.path.startswith('/contact') %}active{% endif %}">Contact</a></li>
         </ul>
     </nav>
+    <div class="nav-backdrop" aria-hidden="true"></div>
 </header>
 
 <main>

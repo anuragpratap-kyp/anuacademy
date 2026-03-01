@@ -208,7 +208,6 @@ def init_db():
 
             execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_id INTEGER").close()
             execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_name TEXT").close()
-            execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_mobile TEXT").close()
         else:
             execute_sql(
                 conn,
@@ -244,8 +243,6 @@ def init_db():
                 execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_id INTEGER").close()
             if "student_name" not in attempt_cols:
                 execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_name TEXT").close()
-            if "student_mobile" not in attempt_cols:
-                execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_mobile TEXT").close()
 
         conn.commit()
     finally:
@@ -302,8 +299,8 @@ def save_attempt(
         """
         INSERT INTO attempts (
             attempted_at, subject, semester, unit, score, total, percentage, result_status,
-            student_id, student_name, student_mobile
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            student_id, student_name
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -316,15 +313,76 @@ def save_attempt(
             result_status,
             student_id,
             (student_name or "").strip(),
-            (student_mobile or "").strip(),
         ),
     ).close()
     conn.commit()
     conn.close()
+    return student_id
 
 
-def get_dashboard_data():
+def get_leaderboard_rows(conn, subject_filter="all", limit=10):
+    clean_subject_filter = (subject_filter or "all").strip()
+    leaderboard_filters = [
+        "student_name IS NOT NULL",
+        "student_name != ''",
+        "student_id IS NOT NULL",
+    ]
+    leaderboard_params = []
+    if clean_subject_filter != "all":
+        leaderboard_filters.append("subject = ?")
+        leaderboard_params.append(clean_subject_filter)
+
+    limit_clause = ""
+    if limit is not None:
+        limit_clause = f"\n        LIMIT {int(limit)}"
+
+    return fetchall_dicts(
+        conn,
+        f"""
+        SELECT
+            student_id,
+            COALESCE(NULLIF(student_name, ''), 'Unknown') AS student_name,
+            MAX(percentage) AS top_percentage,
+            AVG(percentage) AS avg_percentage,
+            COUNT(*) AS attempts
+        FROM attempts
+        WHERE {" AND ".join(leaderboard_filters)}
+        GROUP BY student_name, student_id
+        ORDER BY top_percentage DESC, avg_percentage DESC, attempts DESC, student_name ASC
+        {limit_clause}
+        """,
+        tuple(leaderboard_params),
+    )
+
+
+def get_student_rank(student_id, subject_filter="all"):
+    if not student_id:
+        return (None, 0)
+
     conn = get_db_connection()
+    try:
+        ranked_rows = get_leaderboard_rows(conn, subject_filter=subject_filter, limit=None)
+    finally:
+        conn.close()
+
+    total_students = len(ranked_rows)
+    for index, row in enumerate(ranked_rows, start=1):
+        if row["student_id"] == student_id:
+            return (index, total_students)
+
+    return (None, total_students)
+
+
+def get_percentile(rank, total_students):
+    if not rank or not total_students:
+        return None
+    percentile = ((total_students - rank + 1) / total_students) * 100
+    return round(percentile, 2)
+
+
+def get_dashboard_data(subject_filter="all"):
+    conn = get_db_connection()
+    clean_subject_filter = (subject_filter or "all").strip()
 
     total_attempts = fetchone_dict(conn, "SELECT COUNT(*) AS count FROM attempts")["count"]
     avg_percentage = fetchone_dict(conn, "SELECT AVG(percentage) AS value FROM attempts")["value"] or 0
@@ -375,29 +433,27 @@ def get_dashboard_data():
         conn,
         """
         SELECT attempted_at, subject, semester, unit, score, total, percentage, result_status,
-               student_name, student_mobile
+               student_name
         FROM attempts
         ORDER BY id DESC
         LIMIT 10
         """,
     )
 
-    top_students = fetchall_dicts(
+    subject_options_rows = fetchall_dicts(
         conn,
         """
-        SELECT
-            COALESCE(NULLIF(student_name, ''), 'Unknown') AS student_name,
-            student_mobile,
-            MAX(percentage) AS top_percentage,
-            COUNT(*) AS attempts
+        SELECT DISTINCT subject
         FROM attempts
-        WHERE student_name IS NOT NULL AND student_name != ''
-          AND student_mobile IS NOT NULL AND student_mobile != ''
-        GROUP BY student_name, student_mobile
-        ORDER BY top_percentage DESC, attempts DESC, student_name ASC
-        LIMIT 5
+        WHERE subject IS NOT NULL AND subject != ''
+        ORDER BY subject ASC
         """,
     )
+    subject_options = [row["subject"] for row in subject_options_rows]
+    if clean_subject_filter not in subject_options:
+        clean_subject_filter = "all"
+
+    top_students = get_leaderboard_rows(conn, subject_filter=clean_subject_filter, limit=10)
 
     conn.close()
 
@@ -411,6 +467,8 @@ def get_dashboard_data():
         "subject_stats": subject_stats,
         "recent_attempts": recent_attempts,
         "top_students": top_students,
+        "subject_options": subject_options,
+        "selected_subject": clean_subject_filter,
     }
 
 
@@ -456,6 +514,24 @@ def quiz(subject, semester, unit):
     if request.method == "POST":
         student_name = request.form.get("student_name", "").strip()
         student_mobile = request.form.get("student_mobile", "").strip()
+        if not student_name:
+            return render_template(
+                "quiz.html",
+                questions=questions,
+                subject=subject,
+                semester=semester,
+                unit=unit,
+                error_message="Please enter your name.",
+            )
+        if not (student_mobile.isdigit() and len(student_mobile) == 10):
+            return render_template(
+                "quiz.html",
+                questions=questions,
+                subject=subject,
+                semester=semester,
+                unit=unit,
+                error_message="Mobile number must be exactly 10 digits.",
+            )
 
         score = 0
         total = len(questions)
@@ -466,7 +542,7 @@ def quiz(subject, semester, unit):
 
         percentage = round((score / total) * 100, 2) if total > 0 else 0
         result_status = "Pass" if percentage >= 33 else "Fail"
-        save_attempt(
+        student_id = save_attempt(
             subject,
             semester,
             unit,
@@ -477,6 +553,10 @@ def quiz(subject, semester, unit):
             student_name=student_name,
             student_mobile=student_mobile,
         )
+        subject_rank, subject_total_students = get_student_rank(student_id, subject)
+        overall_rank, overall_total_students = get_student_rank(student_id, "all")
+        subject_percentile = get_percentile(subject_rank, subject_total_students)
+        overall_percentile = get_percentile(overall_rank, overall_total_students)
 
         return render_template(
             "result.html",
@@ -488,6 +568,12 @@ def quiz(subject, semester, unit):
             semester=semester,
             unit=unit,
             student_name=student_name,
+            subject_rank=subject_rank,
+            subject_total_students=subject_total_students,
+            overall_rank=overall_rank,
+            overall_total_students=overall_total_students,
+            subject_percentile=subject_percentile,
+            overall_percentile=overall_percentile,
         )
 
     return render_template(
@@ -496,6 +582,7 @@ def quiz(subject, semester, unit):
         subject=subject,
         semester=semester,
         unit=unit,
+        error_message="",
     )
 
 
@@ -506,7 +593,8 @@ def result():
 
 @app.route("/dashboard")
 def dashboard():
-    stats = get_dashboard_data()
+    selected_subject = request.args.get("subject", "all")
+    stats = get_dashboard_data(selected_subject)
     return render_template("dashboard.html", **stats)
 
 
@@ -524,3 +612,4 @@ def contact():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
+

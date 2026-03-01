@@ -4,135 +4,58 @@
 {% block content %}
 <section class="dashboard-section">
 
-    <div class="dashboard-header">
-        <h2>Your Performance</h2>
-        <p>Track your MCQ progress and performance overview</p>
+    <div class="dashboard-header leaderboard-header">
+        <h2>Your Performance Leaderboard</h2>
+        <p>Top 10 rankings based on best score and consistency.</p>
     </div>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-icon">Attempts</div>
-            <h3>Total MCQs</h3>
-            <p class="stat-number">{{ total_attempts }}</p>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon">Average</div>
-            <h3>Average Score</h3>
-            <p class="stat-number">{{ avg_percentage }}%</p>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon">Best</div>
-            <h3>Best Score</h3>
-            <p class="stat-number">{{ best_percentage }}%</p>
-        </div>
-    </div>
-
-    <div class="stats-container" style="margin-top: 24px;">
-        <div class="stat-card">
-            <h3>Pass Rate</h3>
-            <p class="stat-number">{{ pass_rate }}%</p>
-        </div>
-        <div class="stat-card">
-            <h3>Best Subject</h3>
-            <p class="stat-number">{{ best_subject }}</p>
-        </div>
-        <div class="stat-card">
-            <h3>Needs Work</h3>
-            <p class="stat-number">{{ weak_subject }}</p>
-        </div>
-    </div>
-
-    <div class="dashboard-header" style="margin-top: 38px;">
-        <h2>Subject-wise Performance</h2>
-    </div>
-
-    <div class="card-container">
-        {% if subject_stats %}
-            {% for row in subject_stats %}
-            <div class="subject-card" style="cursor: default;">
-                <h3>{{ row['subject'] }}</h3>
-                <p>Attempts: {{ row['attempts'] }}</p>
-                <p>Average: {{ row['avg_percentage']|round(2) }}%</p>
-                <p>Passed: {{ row['passed'] }}</p>
-            </div>
+    <form method="get" action="{{ url_for('dashboard') }}" class="leaderboard-filter">
+        <label for="subjectFilter">Subject</label>
+        <select id="subjectFilter" name="subject">
+            <option value="all" {% if selected_subject == 'all' %}selected{% endif %}>All Subjects</option>
+            {% for subject in subject_options %}
+            <option value="{{ subject }}" {% if selected_subject == subject %}selected{% endif %}>{{ subject }}</option>
             {% endfor %}
-        {% else %}
-            <div class="subject-card" style="cursor: default;">
-                <h3>No Data Yet</h3>
-                <p>Attempt MCQs to see subject stats.</p>
-            </div>
-        {% endif %}
-    </div>
+        </select>
+        <button type="submit" class="btn leaderboard-filter-btn">Apply</button>
+    </form>
 
-    <div class="dashboard-header" style="margin-top: 38px;">
-        <h2>Highest Rank - Top 5</h2>
-    </div>
-
-    <div class="quiz-box" style="overflow-x: auto;">
+    <div class="quiz-box leaderboard-box" style="overflow-x: auto;">
         {% if top_students %}
-        <table style="width: 100%; border-collapse: collapse; min-width: 640px;">
+        <table class="leaderboard-table">
             <thead>
                 <tr>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Rank</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Name</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Top %</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Attempts</th>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Best %</th>
+                    <th>Average %</th>
+                    <th>Attempts</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in top_students %}
                 <tr>
-                    <td style="padding: 10px;">{{ loop.index }}</td>
-                    <td style="padding: 10px;">{{ row['student_name'] }}</td>
-                    <td style="padding: 10px;">{{ row['top_percentage']|round(2) }}%</td>
-                    <td style="padding: 10px;">{{ row['attempts'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No leaderboard data yet. Start MCQs with name and mobile.</p>
-        {% endif %}
-    </div>
-
-    <div class="dashboard-header" style="margin-top: 38px;">
-        <h2>Recent Attempts</h2>
-    </div>
-
-    <div class="quiz-box" style="overflow-x: auto;">
-        {% if recent_attempts %}
-        <table style="width: 100%; border-collapse: collapse; min-width: 760px;">
-            <thead>
-                <tr>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Date</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Name</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Subject</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Unit</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Score</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">%</th>
-                    <th style="text-align:left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);">Result</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in recent_attempts %}
-                <tr>
-                    <td style="padding: 10px;">{{ row['attempted_at'] }}</td>
-                    <td style="padding: 10px;">{{ row['student_name'] or '-' }}</td>
-                    <td style="padding: 10px;">{{ row['subject'] }}</td>
-                    <td style="padding: 10px;">{{ row['unit'] }}</td>
-                    <td style="padding: 10px;">{{ row['score'] }}/{{ row['total'] }}</td>
-                    <td style="padding: 10px;">{{ row['percentage']|round(2) }}%</td>
-                    <td style="padding: 10px; color: {{ '#65ff9f' if row['result_status'] == 'Pass' else '#ff6b6b' }};">
-                        {{ row['result_status'] }}
+                    <td>
+                        {% if loop.index == 1 %}
+                        <span class="rank-badge rank-gold">1st</span>
+                        {% elif loop.index == 2 %}
+                        <span class="rank-badge rank-silver">2nd</span>
+                        {% elif loop.index == 3 %}
+                        <span class="rank-badge rank-bronze">3rd</span>
+                        {% else %}
+                        <span class="rank-number">{{ loop.index }}</span>
+                        {% endif %}
                     </td>
+                    <td>{{ row['student_name'] }}</td>
+                    <td>{{ row['top_percentage']|round(2) }}%</td>
+                    <td>{{ row['avg_percentage']|round(2) }}%</td>
+                    <td>{{ row['attempts'] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <p>No attempts yet. Start MCQs to populate this table.</p>
+        <p class="leaderboard-empty">No leaderboard data found for this filter. Start MCQs to build the leaderboard.</p>
         {% endif %}
     </div>
 

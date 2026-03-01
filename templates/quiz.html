@@ -13,9 +13,12 @@
     {% else %}
     <div id="quizIntro" class="quiz-box" style="text-align:center;">
         <p><strong>Enter Your Details</strong></p>
+        {% if error_message %}
+        <p style="color: #ffb3b3; margin-bottom: 10px;">{{ error_message }}</p>
+        {% endif %}
         <div class="student-form">
             <input type="text" id="studentName" placeholder="Your Name" maxlength="80">
-            <input type="tel" id="studentMobile" placeholder="Mobile Number" maxlength="15">
+            <input type="text" id="studentMobile" placeholder="Mobile Number (10 digits)" maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="off">
         </div>
         <p><strong>{{ questions|length }} questions</strong></p>
         <p>Total Time: <strong>{{ ((questions|length) * 30) // 60 }}m {{ ((questions|length) * 30) % 60 }}s</strong></p>
@@ -130,15 +133,14 @@
         startQuizBtn.addEventListener("click", () => {
             const nameValue = studentName.value.trim();
             const mobileValue = studentMobile.value.trim();
-            const mobileOk = /^[0-9]{10,15}$/.test(mobileValue);
 
             if (!nameValue) {
                 alert("Please enter your name.");
                 studentName.focus();
                 return;
             }
-            if (!mobileOk) {
-                alert("Please enter a valid mobile number (10-15 digits).");
+            if (!/^\d{10}$/.test(mobileValue)) {
+                alert("Please enter a valid 10-digit mobile number.");
                 studentMobile.focus();
                 return;
             }
@@ -150,6 +152,30 @@
             quizStage.style.display = "block";
             showStep(currentStep);
             startTimer();
+        });
+
+        studentMobile.addEventListener("input", () => {
+            const digitsOnly = studentMobile.value.replace(/\D/g, "").slice(0, 10);
+            studentMobile.value = digitsOnly;
+        });
+
+        studentMobile.addEventListener("keypress", (e) => {
+            const isDigit = /[0-9]/.test(e.key);
+            if (!isDigit || studentMobile.value.length >= 10) {
+                e.preventDefault();
+            }
+        });
+
+        studentMobile.addEventListener("paste", (e) => {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData("text");
+            const digitsOnly = pasted.replace(/\D/g, "");
+            const allowed = (studentMobile.value + digitsOnly).slice(0, 10);
+            studentMobile.value = allowed;
+        });
+
+        studentMobile.addEventListener("drop", (e) => {
+            e.preventDefault();
         });
 
         nextBtn.addEventListener("click", () => {
