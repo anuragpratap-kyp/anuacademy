@@ -5,8 +5,15 @@ from datetime import datetime
 from pathlib import Path
 from flask import Flask, redirect, render_template, request, url_for
 
+try:
+    import psycopg2
+except ImportError:
+    psycopg2 = None
+
 app = Flask(__name__)
-DB_PATH = Path(__file__).with_name("quiz_history.db")
+DEFAULT_DB_PATH = Path(__file__).with_name("quiz_history.db")
+DB_PATH = Path(os.environ.get("DB_PATH", str(DEFAULT_DB_PATH)))
+DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip()
 QUESTIONS_PATH = Path(__file__).with_name("questions.json")
 
 # Load questions from JSON
@@ -100,7 +107,68 @@ def get_units_for_subject(subject, semester):
     return units
 
 
+def normalize_database_url(url):
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
+def using_postgres():
+    return bool(DATABASE_URL)
+
+
+def get_cursor_columns(cursor):
+    return [desc[0] for desc in (cursor.description or [])]
+
+
+def row_to_dict(row, columns):
+    if row is None:
+        return None
+
+    if isinstance(row, sqlite3.Row):
+        return dict(row)
+
+    return {columns[i]: row[i] for i in range(len(columns))}
+
+
+def query_with_placeholders(sql):
+    if using_postgres():
+        return sql.replace("?", "%s")
+    return sql
+
+
+def fetchone_dict(conn, sql, params=()):
+    cur = conn.cursor()
+    cur.execute(query_with_placeholders(sql), params)
+    row = cur.fetchone()
+    columns = get_cursor_columns(cur)
+    cur.close()
+    return row_to_dict(row, columns)
+
+
+def fetchall_dicts(conn, sql, params=()):
+    cur = conn.cursor()
+    cur.execute(query_with_placeholders(sql), params)
+    rows = cur.fetchall()
+    columns = get_cursor_columns(cur)
+    cur.close()
+    return [row_to_dict(row, columns) for row in rows]
+
+
+def execute_sql(conn, sql, params=()):
+    cur = conn.cursor()
+    cur.execute(query_with_placeholders(sql), params)
+    return cur
+
+
 def get_db_connection():
+    if using_postgres():
+        if psycopg2 is None:
+            raise RuntimeError(
+                "DATABASE_URL is set but psycopg2 is not installed. Add psycopg2-binary to requirements."
+            )
+        return psycopg2.connect(normalize_database_url(DATABASE_URL))
+
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -108,42 +176,80 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            mobile TEXT NOT NULL,
-            UNIQUE(name, mobile)
-        )
-        """
-    )
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS attempts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            attempted_at TEXT NOT NULL,
-            subject TEXT NOT NULL,
-            semester INTEGER NOT NULL,
-            unit TEXT NOT NULL,
-            score INTEGER NOT NULL,
-            total INTEGER NOT NULL,
-            percentage REAL NOT NULL,
-            result_status TEXT NOT NULL
-        )
-        """
-    )
+    try:
+        if using_postgres():
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS students (
+                    id SERIAL PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    mobile TEXT NOT NULL,
+                    UNIQUE(name, mobile)
+                )
+                """,
+            ).close()
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS attempts (
+                    id SERIAL PRIMARY KEY,
+                    attempted_at TEXT NOT NULL,
+                    subject TEXT NOT NULL,
+                    semester INTEGER NOT NULL,
+                    unit TEXT NOT NULL,
+                    score INTEGER NOT NULL,
+                    total INTEGER NOT NULL,
+                    percentage REAL NOT NULL,
+                    result_status TEXT NOT NULL
+                )
+                """,
+            ).close()
 
-    attempt_cols = {row["name"] for row in conn.execute("PRAGMA table_info(attempts)").fetchall()}
-    if "student_id" not in attempt_cols:
-        conn.execute("ALTER TABLE attempts ADD COLUMN student_id INTEGER")
-    if "student_name" not in attempt_cols:
-        conn.execute("ALTER TABLE attempts ADD COLUMN student_name TEXT")
-    if "student_mobile" not in attempt_cols:
-        conn.execute("ALTER TABLE attempts ADD COLUMN student_mobile TEXT")
+            execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_id INTEGER").close()
+            execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_name TEXT").close()
+            execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_mobile TEXT").close()
+        else:
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS students (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    mobile TEXT NOT NULL,
+                    UNIQUE(name, mobile)
+                )
+                """,
+            ).close()
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS attempts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    attempted_at TEXT NOT NULL,
+                    subject TEXT NOT NULL,
+                    semester INTEGER NOT NULL,
+                    unit TEXT NOT NULL,
+                    score INTEGER NOT NULL,
+                    total INTEGER NOT NULL,
+                    percentage REAL NOT NULL,
+                    result_status TEXT NOT NULL
+                )
+                """,
+            ).close()
 
-    conn.commit()
-    conn.close()
+            attempt_cols_rows = fetchall_dicts(conn, "PRAGMA table_info(attempts)")
+            attempt_cols = {row["name"] for row in attempt_cols_rows}
+            if "student_id" not in attempt_cols:
+                execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_id INTEGER").close()
+            if "student_name" not in attempt_cols:
+                execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_name TEXT").close()
+            if "student_mobile" not in attempt_cols:
+                execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_mobile TEXT").close()
+
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def get_or_create_student(name, mobile):
@@ -153,23 +259,26 @@ def get_or_create_student(name, mobile):
         return None
 
     conn = get_db_connection()
-    existing = conn.execute(
+    existing = fetchone_dict(
+        conn,
         "SELECT id FROM students WHERE name = ? AND mobile = ?",
         (clean_name, clean_mobile),
-    ).fetchone()
+    )
 
     if existing:
         student_id = existing["id"]
     else:
-        conn.execute(
+        execute_sql(
+            conn,
             "INSERT INTO students (name, mobile) VALUES (?, ?)",
             (clean_name, clean_mobile),
-        )
+        ).close()
         conn.commit()
-        student_id = conn.execute(
+        student_id = fetchone_dict(
+            conn,
             "SELECT id FROM students WHERE name = ? AND mobile = ?",
             (clean_name, clean_mobile),
-        ).fetchone()["id"]
+        )["id"]
 
     conn.close()
     return student_id
@@ -188,7 +297,8 @@ def save_attempt(
 ):
     student_id = get_or_create_student(student_name, student_mobile)
     conn = get_db_connection()
-    conn.execute(
+    execute_sql(
+        conn,
         """
         INSERT INTO attempts (
             attempted_at, subject, semester, unit, score, total, percentage, result_status,
@@ -208,7 +318,7 @@ def save_attempt(
             (student_name or "").strip(),
             (student_mobile or "").strip(),
         ),
-    )
+    ).close()
     conn.commit()
     conn.close()
 
@@ -216,35 +326,39 @@ def save_attempt(
 def get_dashboard_data():
     conn = get_db_connection()
 
-    total_attempts = conn.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
-    avg_percentage = conn.execute("SELECT AVG(percentage) FROM attempts").fetchone()[0] or 0
-    best_percentage = conn.execute("SELECT MAX(percentage) FROM attempts").fetchone()[0] or 0
-    pass_count = conn.execute(
-        "SELECT COUNT(*) FROM attempts WHERE result_status = 'Pass'"
-    ).fetchone()[0]
+    total_attempts = fetchone_dict(conn, "SELECT COUNT(*) AS count FROM attempts")["count"]
+    avg_percentage = fetchone_dict(conn, "SELECT AVG(percentage) AS value FROM attempts")["value"] or 0
+    best_percentage = fetchone_dict(conn, "SELECT MAX(percentage) AS value FROM attempts")["value"] or 0
+    pass_count = fetchone_dict(
+        conn,
+        "SELECT COUNT(*) AS count FROM attempts WHERE result_status = 'Pass'",
+    )["count"]
     pass_rate = round((pass_count / total_attempts) * 100, 2) if total_attempts else 0
 
-    best_subject_row = conn.execute(
+    best_subject_row = fetchone_dict(
+        conn,
         """
         SELECT subject, AVG(percentage) AS avg_score
         FROM attempts
         GROUP BY subject
         ORDER BY avg_score DESC
         LIMIT 1
-        """
-    ).fetchone()
+        """,
+    )
 
-    weak_subject_row = conn.execute(
+    weak_subject_row = fetchone_dict(
+        conn,
         """
         SELECT subject, AVG(percentage) AS avg_score
         FROM attempts
         GROUP BY subject
         ORDER BY avg_score ASC
         LIMIT 1
-        """
-    ).fetchone()
+        """,
+    )
 
-    subject_stats = conn.execute(
+    subject_stats = fetchall_dicts(
+        conn,
         """
         SELECT
             subject,
@@ -254,20 +368,22 @@ def get_dashboard_data():
         FROM attempts
         GROUP BY subject
         ORDER BY attempts DESC, subject ASC
-        """
-    ).fetchall()
+        """,
+    )
 
-    recent_attempts = conn.execute(
+    recent_attempts = fetchall_dicts(
+        conn,
         """
         SELECT attempted_at, subject, semester, unit, score, total, percentage, result_status,
                student_name, student_mobile
         FROM attempts
         ORDER BY id DESC
         LIMIT 10
-        """
-    ).fetchall()
+        """,
+    )
 
-    top_students = conn.execute(
+    top_students = fetchall_dicts(
+        conn,
         """
         SELECT
             COALESCE(NULLIF(student_name, ''), 'Unknown') AS student_name,
@@ -280,8 +396,8 @@ def get_dashboard_data():
         GROUP BY student_name, student_mobile
         ORDER BY top_percentage DESC, attempts DESC, student_name ASC
         LIMIT 5
-        """
-    ).fetchall()
+        """,
+    )
 
     conn.close()
 
