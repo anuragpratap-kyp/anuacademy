@@ -601,7 +601,7 @@ def quiz(subject, semester, unit):
 
 @app.route("/result")
 def result():
-    return render_template("result.html", score=0, total=0, percentage=0, result_status="Fail")
+    return redirect(url_for("subjects"))
 
 
 @app.route("/dashboard")

@@ -834,6 +834,7 @@ footer{
 html,
 body {
     height: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -1282,6 +1283,9 @@ footer {
         position: fixed;
         top: 0;
         right: 0;
+        left: auto;
+        max-width: 320px;
+        height: 100vh;
         height: 100dvh;
         width: min(78vw, 320px);
         margin-left: 0;
@@ -1294,6 +1298,10 @@ footer {
         box-shadow: -16px 0 36px rgba(0, 0, 0, 0.35);
         transform: translateX(100%);
         transition: transform 0.28s ease;
+        will-change: transform;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
         z-index: 1310;
     }
 
@@ -1333,6 +1341,10 @@ footer {
 
     body.nav-open .nav-links {
         transform: translateX(0);
+    }
+
+    body.nav-open {
+        overflow: hidden;
     }
 
     body.nav-open .nav-backdrop {

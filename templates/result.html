@@ -8,18 +8,27 @@
     <p>{{ subject }} | Semester {{ semester }} | {{ unit }}</p>
     {% endif %}
     <div class="quiz-box result-card">
+        {% if total and total > 0 %}
         <p>You scored {{ score }} out of {{ total }}</p>
         <p>Percentage: {{ percentage }}%</p>
         <p class="result-status {{ 'status-pass' if result_status == 'Pass' else 'status-fail' }}">
             Result: {{ result_status }}
         </p>
-        {% if subject_rank %}
+        {% if subject_rank is not none %}
         <p><strong>Your Subject Rank:</strong> {{ subject_rank }} / {{ subject_total_students }}</p>
+        {% if subject_percentile is not none %}
         <p><strong>Subject Percentile:</strong> {{ subject_percentile }}%</p>
         {% endif %}
-        {% if overall_rank %}
+        {% endif %}
+        {% if overall_rank is not none %}
         <p><strong>Your Overall Rank:</strong> {{ overall_rank }} / {{ overall_total_students }}</p>
+        {% if overall_percentile is not none %}
         <p><strong>Overall Percentile:</strong> {{ overall_percentile }}%</p>
+        {% endif %}
+        {% endif %}
+        {% else %}
+        <p>No quiz result is available yet.</p>
+        <p>Take a quiz to see your score, rank, and percentile.</p>
         {% endif %}
     </div>
     <div class="result-actions">
