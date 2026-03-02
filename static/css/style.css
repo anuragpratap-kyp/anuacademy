@@ -1231,8 +1231,8 @@ footer {
 
 .nav-toggle {
     display: none;
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.22);
     background: rgba(255, 255, 255, 0.08);
@@ -1242,6 +1242,7 @@ footer {
     gap: 5px;
     cursor: pointer;
     transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    touch-action: manipulation;
 }
 
 .nav-toggle:hover {
@@ -1290,15 +1291,15 @@ footer {
         height: 100dvh;
         width: 78vw;
         margin-left: 0;
-        padding: 84px 22px 24px;
+        padding: calc(84px + env(safe-area-inset-top, 0px)) 22px calc(24px + env(safe-area-inset-bottom, 0px));
         flex-direction: column;
         align-items: stretch;
-        gap: 6px;
+        gap: 8px;
         background: linear-gradient(180deg, rgba(10, 32, 45, 0.98), rgba(8, 24, 35, 0.98));
         border-left: 1px solid rgba(255, 255, 255, 0.14);
         box-shadow: -16px 0 36px rgba(0, 0, 0, 0.35);
         transform: none;
-        transition: right 0.28s ease;
+        transition: right 0.34s cubic-bezier(0.22, 1, 0.36, 1);
         overflow-y: auto;
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
@@ -1312,10 +1313,13 @@ footer {
     .nav-links a {
         display: block;
         width: 100%;
-        padding: 12px 10px;
+        min-height: 48px;
+        padding: 13px 12px;
         border-radius: 10px;
         font-weight: 600;
         color: #eaf8ff;
+        display: flex;
+        align-items: center;
     }
 
     .nav-links a::after {
@@ -1333,9 +1337,10 @@ footer {
         inset: 0;
         display: block;
         background: rgba(3, 10, 16, 0.55);
+        backdrop-filter: blur(1.5px);
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.2s ease;
+        transition: opacity 0.28s ease;
         z-index: 1200;
     }
 
