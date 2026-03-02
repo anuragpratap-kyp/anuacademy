@@ -57,12 +57,12 @@ COURSE_ACTIVE_SEMESTERS = {
 }
 
 # Load questions from JSON
-with QUESTIONS_PATH.open(encoding="utf-8") as f:
+with QUESTIONS_PATH.open(encoding="utf-8-sig") as f:
     all_questions = json.load(f)
 
 
 def load_questions():
-    with QUESTIONS_PATH.open(encoding="utf-8") as f:
+    with QUESTIONS_PATH.open(encoding="utf-8-sig") as f:
         return json.load(f)
 
 

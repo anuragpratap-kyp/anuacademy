@@ -1,196 +1,1402 @@
 [
   {
-    "subject": "Chemistry",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit I - Atomic Structure",
-    "question": "Which principle states that exact position and momentum cannot be measured simultaneously?",
-    "options": ["Pauli Exclusion Principle", "Hund's Rule", "Heisenberg Uncertainty Principle", "Aufbau Principle"],
-    "answer": "Heisenberg Uncertainty Principle"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The concept of \"Centers of Diversity\" was proposed by:",
+    "question_hi": "\"Centers of Diversity\" का सिद्धांत किसने दिया था?",
+    "options": [
+      "Charles Darwin",
+      "Vavilov",
+      "Linnaeus",
+      "Mendel"
+    ],
+    "answer": "Vavilov"
   },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit II - Elementary Quantum Mechanics",
-    "question": "Black-body radiation is best explained by which theory?",
-    "options": ["Bohr model", "Planck's quantum theory", "Dalton atomic theory", "Valence bond theory"],
-    "answer": "Planck's quantum theory"
-  },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit III - Molecular Spectroscopy",
-    "question": "Which spectrum is commonly used to study rotational transitions?",
-    "options": ["Microwave spectrum", "UV spectrum", "X-ray spectrum", "Flame spectrum"],
-    "answer": "Microwave spectrum"
-  },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit IV - UV-Visible Spectroscopy",
-    "question": "In UV-Visible spectroscopy, lambda max represents:",
-    "options": ["Minimum absorbance", "Maximum absorbance wavelength", "Boiling point", "Molecular weight"],
-    "answer": "Maximum absorbance wavelength"
-  },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit V - Infrared Spectroscopy",
-    "question": "IR spectroscopy mainly studies:",
-    "options": ["Nuclear reactions", "Molecular vibrations", "Electron spin", "Crystal defects"],
-    "answer": "Molecular vibrations"
-  },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit VI - 1H-NMR Spectroscopy (PMR)",
-    "question": "Chemical shift in 1H NMR is usually reported in:",
-    "options": ["ppm", "Hz only", "cm-1", "nm"],
-    "answer": "ppm"
-  },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit VII - Introduction to Mass Spectrometry",
-    "question": "In mass spectrometry, m/z stands for:",
-    "options": ["mass to charge ratio", "mole to zone ratio", "mass to zero ratio", "molecule to zinc ratio"],
-    "answer": "mass to charge ratio"
-  },
-  {
-    "subject": "Chemistry",
-    "semester": 4,
-    "unit": "Unit VIII - Separation Techniques",
-    "question": "Which technique is commonly used to separate mixture components on a stationary phase?",
-    "options": ["Titration", "Chromatography", "Distillation only", "Neutralization"],
-    "answer": "Chromatography"
-  },
-
   {
     "subject": "Botany",
     "semester": 4,
     "unit": "Unit I - Origin and domestication of cultivated plants",
-    "question": "Domestication of crop plants mainly means:",
-    "options": ["Wild extinction", "Human selection for useful traits", "Only greenhouse growth", "Genetic drift only"],
-    "answer": "Human selection for useful traits"
+    "question": "Which of the following is considered a primary center of origin for wheat?",
+    "question_hi": "निम्नलिखित में से गेहूँ का प्राथमिक उद्गम स्थल कौन सा है?",
+    "options": [
+      "India",
+      "China",
+      "Middle East",
+      "South America"
+    ],
+    "answer": "Middle East"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit II - Botany of oils, fibers, timber yielding plants and dyes",
-    "question": "Cotton is primarily a:",
-    "options": ["Timber crop", "Fiber crop", "Dye crop", "Root crop"],
-    "answer": "Fiber crop"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants refers to:",
+    "question_hi": "पौधों का domestication किसे दर्शाता है?",
+    "options": [
+      "Growing plants in wild conditions",
+      "Genetic modification of plants",
+      "Cultivation of plants for human use",
+      "Natural selection of plants"
+    ],
+    "answer": "Cultivation of plants for human use"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit III - Commercial production of flowers, vegetables and fruits",
-    "question": "Hydroponics refers to cultivation of plants:",
-    "options": ["Only in deserts", "Without soil using nutrient solution", "Only in clay soil", "Only in rainfed fields"],
-    "answer": "Without soil using nutrient solution"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is known as the \"staff of life\"?",
+    "question_hi": "किस अनाज को \"जीवन का आधार\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Wheat"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit IV - IPR and Traditional Knowledge",
-    "question": "TRIPS agreement is related to:",
-    "options": ["Weather prediction", "Intellectual Property Rights", "Forest fire control", "Plant irrigation"],
-    "answer": "Intellectual Property Rights"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Legumes are important because they:",
+    "question_hi": "दलहन (legumes) महत्वपूर्ण क्यों हैं?",
+    "options": [
+      "Are rich in fats",
+      "Fix atmospheric nitrogen",
+      "Are used for beverages",
+      "Provide timber"
+    ],
+    "answer": "Fix atmospheric nitrogen"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit V - Ethnobotany",
-    "question": "Ethnobotany studies:",
-    "options": ["Plant diseases only", "Relationship between people and plants", "Only algae taxonomy", "Only fossil plants"],
-    "answer": "Relationship between people and plants"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Sustainable development emphasizes:",
+    "question_hi": "सतत विकास किस पर जोर देता है?",
+    "options": [
+      "Maximum exploitation of resources",
+      "Short-term economic growth",
+      "Balanced use of resources for future generations",
+      "Industrial expansion"
+    ],
+    "answer": "Balanced use of resources for future generations"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit VI - Medicinal aspects",
-    "question": "Tulsi (Ocimum sanctum) is widely known as a:",
-    "options": ["Industrial dye plant", "Medicinal plant", "Timber tree", "Aquatic weed"],
-    "answer": "Medicinal plant"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल है?",
+    "options": [
+      "Tomato",
+      "Cardamom",
+      "Cucumber",
+      "Lettuce"
+    ],
+    "answer": "Cardamom"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit VII - Pharmacognosy",
-    "question": "Pharmacognosy mainly deals with:",
-    "options": ["Synthetic polymers", "Crude drugs from natural sources", "Rocket fuel plants", "Only fungal genetics"],
-    "answer": "Crude drugs from natural sources"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Coffee is obtained from:",
+    "question_hi": "कॉफी किससे प्राप्त होती है?",
+    "options": [
+      "Seeds",
+      "Leaves",
+      "Bark",
+      "Roots"
+    ],
+    "answer": "Seeds"
   },
   {
     "subject": "Botany",
     "semester": 4,
-    "unit": "Unit VIII - Herbal Preparations and Phytochemistry",
-    "question": "Alkaloids, flavonoids and terpenes are examples of:",
-    "options": ["Primary school terms", "Phytochemicals", "Mineral salts", "Plant hormones only"],
-    "answer": "Phytochemicals"
-  },
-
-  {
-    "subject": "Zoology",
-    "semester": 4,
-    "unit": "Unit I - Principles of Gene Manipulation",
-    "question": "Restriction enzymes are used to:",
-    "options": ["Cut DNA at specific sequences", "Synthesize proteins directly", "Measure blood pressure", "Destroy RNA only"],
-    "answer": "Cut DNA at specific sequences"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The introduction of crop plants involves:",
+    "question_hi": "फसल पौधों का introduction किससे संबंधित है?",
+    "options": [
+      "Exporting native plants",
+      "Importing and adapting foreign plants",
+      "Genetic engineering",
+      "Natural hybridization"
+    ],
+    "answer": "Importing and adapting foreign plants"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit II - Applications of Genetic Engineering",
-    "question": "A transgenic organism is one that:",
-    "options": ["Has no DNA", "Contains foreign gene(s)", "Lives only in water", "Cannot reproduce"],
-    "answer": "Contains foreign gene(s)"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which beverage crop is native to China?",
+    "question_hi": "कौन सी पेय फसल चीन की मूल निवासी है?",
+    "options": [
+      "Coffee",
+      "Tea",
+      "Cocoa",
+      "Wine grape"
+    ],
+    "answer": "Tea"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit III - DNA Diagnostics",
-    "question": "PCR in diagnostics is used for:",
-    "options": ["Amplifying DNA", "Protein digestion", "Cell staining", "Lipid extraction"],
-    "answer": "Amplifying DNA"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The term \"crop plant\" refers to:",
+    "question_hi": "\"Crop plant\" शब्द किसे दर्शाता है?",
+    "options": [
+      "Wild plants",
+      "Plants grown for ornamental purposes",
+      "Plants cultivated for food, fiber, or other uses",
+      "Medicinal plants only"
+    ],
+    "answer": "Plants cultivated for food, fiber, or other uses"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit IV - Immune System and its Components",
-    "question": "Antibodies are produced by:",
-    "options": ["RBCs", "B-lymphocytes", "Platelets", "Neutrophils only"],
-    "answer": "B-lymphocytes"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is most widely consumed in India?",
+    "question_hi": "भारत में सबसे अधिक खाया जाने वाला अनाज कौन सा है?",
+    "options": [
+      "Wheat",
+      "Maize",
+      "Rice",
+      "Barley"
+    ],
+    "answer": "Rice"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit V - Biostatistics I",
-    "question": "Which is a measure of central tendency?",
-    "options": ["Mean", "Variance", "Standard deviation", "Range"],
-    "answer": "Mean"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication leads to:",
+    "question_hi": "पौधों का domestication किस परिणाम की ओर ले जाता है?",
+    "options": [
+      "Increased genetic diversity",
+      "Reduced yield",
+      "Loss of wild traits",
+      "Resistance to pests"
+    ],
+    "answer": "Loss of wild traits"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit VI - Biostatistics II",
-    "question": "Student's t-test is generally used to:",
-    "options": ["Compare means", "Sequence DNA", "Measure pH", "Identify tissues"],
-    "answer": "Compare means"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is NOT a legume?",
+    "question_hi": "निम्नलिखित में से कौन सा दलहन नहीं है?",
+    "options": [
+      "Chickpea",
+      "Lentil",
+      "Soybean",
+      "Mustard"
+    ],
+    "answer": "Mustard"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit VII - Basics of Computers",
-    "question": "CPU stands for:",
-    "options": ["Central Processing Unit", "Computer Primary Unit", "Central Program Utility", "Control Processing Utility"],
-    "answer": "Central Processing Unit"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The beverage cocoa is derived from:",
+    "question_hi": "कोको पेय किस पौधे से प्राप्त होता है?",
+    "options": [
+      "Theobroma cacao",
+      "Coffea arabica",
+      "Camellia sinensis",
+      "Vitis vinifera"
+    ],
+    "answer": "Theobroma cacao"
   },
   {
-    "subject": "Zoology",
+    "subject": "Botany",
     "semester": 4,
-    "unit": "Unit VIII - Bioinformatics",
-    "question": "BLAST is commonly used for:",
-    "options": ["Sequence alignment search", "Blood analysis", "Image compression", "Protein purification"],
-    "answer": "Sequence alignment search"
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a cereal crop?",
+    "question_hi": "निम्नलिखित में से कौन सी एक अनाज फसल है?",
+    "options": [
+      "Sugarcane",
+      "Maize",
+      "Cotton",
+      "Soybean"
+    ],
+    "answer": "Maize"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The term \"center of origin\" refers to:",
+    "question_hi": "\"Center of origin\" शब्द किसे दर्शाता है?",
+    "options": [
+      "Place where crop is most cultivated",
+      "Place where crop was first domesticated",
+      "Place where crop is exported",
+      "Place of highest yield"
+    ],
+    "answer": "Place where crop was first domesticated"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल है?",
+    "options": [
+      "Turmeric",
+      "Tea",
+      "Mustard",
+      "Fenugreek"
+    ],
+    "answer": "Tea"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which crop is known for its use in sustainable agriculture due to nitrogen fixation?",
+    "question_hi": "कौन सी फसल नाइट्रोजन स्थिरीकरण के कारण सतत कृषि में उपयोगी है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Chickpea",
+      "Sugarcane"
+    ],
+    "answer": "Chickpea"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The concept of sustainable development was popularized in:",
+    "question_hi": "सतत विकास की अवधारणा किस दशक में लोकप्रिय हुई?",
+    "options": [
+      "1950s",
+      "1970s",
+      "1980s",
+      "2000s"
+    ],
+    "answer": "1980s"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal originated in China?",
+    "question_hi": "कौन सा अनाज चीन में उत्पन्न हुआ?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Rice"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants began during:",
+    "question_hi": "पौधों का domestication किस काल में शुरू हुआ?",
+    "options": [
+      "Stone Age",
+      "Bronze Age",
+      "Iron Age",
+      "Modern Age"
+    ],
+    "answer": "Stone Age"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a legume crop?",
+    "question_hi": "निम्नलिखित में से कौन सी एक दलहन फसल है?",
+    "options": [
+      "Cotton",
+      "Lentil",
+      "Rice",
+      "Barley"
+    ],
+    "answer": "Lentil"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Coffee belongs to which family?",
+    "question_hi": "कॉफी किस कुल (family) से संबंधित है?",
+    "options": [
+      "Rubiaceae",
+      "Solanaceae",
+      "Poaceae",
+      "Fabaceae"
+    ],
+    "answer": "Rubiaceae"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to the Americas?",
+    "question_hi": "कौन सा अनाज अमेरिका का मूल निवासी है?",
+    "options": [
+      "Rice",
+      "Maize",
+      "Wheat",
+      "Barley"
+    ],
+    "answer": "Maize"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants results in:",
+    "question_hi": "पौधों का domestication किस परिणाम को जन्म देता है?",
+    "options": [
+      "Wild traits increase",
+      "Plants become more suitable for human use",
+      "Plants become less productive",
+      "Plants resist domestication"
+    ],
+    "answer": "Plants become more suitable for human use"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from seeds?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल बीजों से प्राप्त होती है?",
+    "options": [
+      "Tea",
+      "Coffee",
+      "Cocoa",
+      "Both B and C"
+    ],
+    "answer": "Both B and C"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The domestication of rice took place in:",
+    "question_hi": "चावल का domestication कहाँ हुआ?",
+    "options": [
+      "India",
+      "China",
+      "Africa",
+      "Europe"
+    ],
+    "answer": "China"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Golden grain\"?",
+    "question_hi": "किस अनाज को \"Golden grain\" कहा जाता है?",
+    "options": [
+      "Wheat",
+      "Rice",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Wheat"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Legumes are rich in:",
+    "question_hi": "दलहन किस पोषक तत्व से भरपूर होते हैं?",
+    "options": [
+      "Carbohydrates",
+      "Proteins",
+      "Fats",
+      "Vitamins"
+    ],
+    "answer": "Proteins"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called the \"King of cereals\"?",
+    "question_hi": "किस अनाज को \"King of cereals\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Wheat"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "The domestication of maize took place in:",
+    "question_hi": "मक्का (Maize) का domestication कहाँ हुआ?",
+    "options": [
+      "India",
+      "China",
+      "Mexico",
+      "Africa"
+    ],
+    "answer": "Mexico"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from leaves?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल पत्तियों से प्राप्त होती है?",
+    "options": [
+      "Coffee",
+      "Tea",
+      "Cocoa",
+      "Wine grape"
+    ],
+    "answer": "Tea"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of barley occurred in:",
+    "question_hi": "जौ (Barley) का domestication कहाँ हुआ?",
+    "options": [
+      "Middle East",
+      "India",
+      "China",
+      "Africa"
+    ],
+    "answer": "Middle East"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is known as \"Poor man's food\"?",
+    "question_hi": "किस अनाज को \"गरीबों का भोजन\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Barley"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Legumes are important in agriculture because they:",
+    "question_hi": "कृषि में दलहन क्यों महत्वपूर्ण हैं?",
+    "options": [
+      "Provide timber",
+      "Fix nitrogen",
+      "Yield oil",
+      "Produce beverages"
+    ],
+    "answer": "Fix nitrogen"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop native to India?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल भारत की मूल निवासी है?",
+    "options": [
+      "Cardamom",
+      "Black pepper",
+      "Cinnamon",
+      "Clove"
+    ],
+    "answer": "Black pepper"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Coffee originated in:",
+    "question_hi": "कॉफी कहाँ उत्पन्न हुई?",
+    "options": [
+      "Brazil",
+      "Ethiopia",
+      "India",
+      "China"
+    ],
+    "answer": "Ethiopia"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Universal food\"?",
+    "question_hi": "किस अनाज को \"Universal food\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Rice"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants is an example of:",
+    "question_hi": "पौधों का domestication किसका उदाहरण है?",
+    "options": [
+      "Artificial selection",
+      "Natural selection",
+      "Mutation",
+      "Hybridization"
+    ],
+    "answer": "Artificial selection"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from fruits?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल फलों से प्राप्त होती है?",
+    "options": [
+      "Cocoa",
+      "Wine grape",
+      "Coffee",
+      "Tea"
+    ],
+    "answer": "Wine grape"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Rice belongs to which family?",
+    "question_hi": "चावल किस कुल (family) से संबंधित है?",
+    "options": [
+      "Poaceae",
+      "Fabaceae",
+      "Solanaceae",
+      "Rubiaceae"
+    ],
+    "answer": "Poaceae"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Queen of cereals\"?",
+    "question_hi": "किस अनाज को \"Queen of cereals\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Rice"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants started with:",
+    "question_hi": "पौधों का domestication किससे शुरू हुआ?",
+    "options": [
+      "Fruits",
+      "Cereals",
+      "Spices",
+      "Beverages"
+    ],
+    "answer": "Cereals"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a legume rich in oil?",
+    "question_hi": "निम्नलिखित में से कौन सा दलहन तेल से भरपूर है?",
+    "options": [
+      "Soybean",
+      "Lentil",
+      "Chickpea",
+      "Pea"
+    ],
+    "answer": "Soybean"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Tea belongs to which family?",
+    "question_hi": "चाय किस कुल (family) से संबंधित है?",
+    "options": [
+      "Rubiaceae",
+      "Solanaceae",
+      "Theaceae",
+      "Poaceae"
+    ],
+    "answer": "Theaceae"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to Africa?",
+    "question_hi": "कौन सा अनाज अफ्रीका का मूल निवासी है?",
+    "options": [
+      "Rice",
+      "Maize",
+      "Sorghum",
+      "Wheat"
+    ],
+    "answer": "Sorghum"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants improved:",
+    "question_hi": "पौधों का domestication किसे सुधारता है?",
+    "options": [
+      "Wild traits",
+      "Yield and quality",
+      "Resistance to domestication",
+      "Natural diversity"
+    ],
+    "answer": "Yield and quality"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from bark?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल छाल से प्राप्त होती है?",
+    "options": [
+      "Cinnamon",
+      "Cardamom",
+      "Clove",
+      "Pepper"
+    ],
+    "answer": "Cinnamon"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Coffee is scientifically known as:",
+    "question_hi": "कॉफी का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Coffea arabica",
+      "Camellia sinensis",
+      "Theobroma cacao",
+      "Vitis vinifera"
+    ],
+    "answer": "Coffea arabica"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Mother of cereals\"?",
+    "question_hi": "किस अनाज को \"Mother of cereals\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Barley",
+      "Maize"
+    ],
+    "answer": "Barley"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants improved:",
+    "question_hi": "पौधों का domestication किसे सुधारता है?",
+    "options": [
+      "Yield and adaptability",
+      "Wild traits",
+      "Resistance to domestication",
+      "Natural diversity"
+    ],
+    "answer": "Yield and adaptability"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from seeds?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल बीजों से प्राप्त होती है?",
+    "options": [
+      "Mustard",
+      "Cardamom",
+      "Black pepper",
+      "Fenugreek"
+    ],
+    "answer": "Fenugreek"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Rice is scientifically known as:",
+    "question_hi": "चावल का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Triticum aestivum",
+      "Oryza sativa",
+      "Zea mays",
+      "Hordeum vulgare"
+    ],
+    "answer": "Oryza sativa"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to South America?",
+    "question_hi": "कौन सा अनाज दक्षिण अमेरिका का मूल निवासी है?",
+    "options": [
+      "Maize",
+      "Quinoa",
+      "Wheat",
+      "Rice"
+    ],
+    "answer": "Quinoa"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants is associated with:",
+    "question_hi": "पौधों का domestication किससे जुड़ा है?",
+    "options": [
+      "Agriculture revolution",
+      "Industrial revolution",
+      "Green revolution",
+      "Digital revolution"
+    ],
+    "answer": "Agriculture revolution"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from beans?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल बीजों (beans) से प्राप्त होती है?",
+    "options": [
+      "Coffee",
+      "Tea",
+      "Cocoa",
+      "Wine grape"
+    ],
+    "answer": "Coffee"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Wheat belongs to which family?",
+    "question_hi": "गेहूँ किस कुल (family) से संबंधित है?",
+    "options": [
+      "Poaceae",
+      "Fabaceae",
+      "Solanaceae",
+      "Rubiaceae"
+    ],
+    "answer": "Poaceae"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Coarse grain\"?",
+    "question_hi": "किस अनाज को \"Coarse grain\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Millets"
+    ],
+    "answer": "Millets"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants reduced:",
+    "question_hi": "पौधों का domestication किसे कम करता है?",
+    "options": [
+      "Genetic diversity",
+      "Yield",
+      "Adaptability",
+      "Human use"
+    ],
+    "answer": "Genetic diversity"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from flower buds?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल फूल की कलियों से प्राप्त होती है?",
+    "options": [
+      "Clove",
+      "Cinnamon",
+      "Cardamom",
+      "Pepper"
+    ],
+    "answer": "Clove"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Maize is scientifically known as:",
+    "question_hi": "मक्का का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum",
+      "Hordeum vulgare"
+    ],
+    "answer": "Zea mays"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to India?",
+    "question_hi": "कौन सा अनाज भारत का मूल निवासी है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Pearl millet (Bajra)",
+      "Maize"
+    ],
+    "answer": "Pearl millet (Bajra)"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants led to:",
+    "question_hi": "पौधों का domestication किस परिणाम की ओर ले गया?",
+    "options": [
+      "Stable food supply",
+      "Wild traits increase",
+      "Reduced cultivation",
+      "Loss of agriculture"
+    ],
+    "answer": "Stable food supply"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from fermented fruits?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल किण्वित फलों से प्राप्त होती है?",
+    "options": [
+      "Wine grape",
+      "Coffee",
+      "Tea",
+      "Cocoa"
+    ],
+    "answer": "Wine grape"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Barley is scientifically known as:",
+    "question_hi": "जौ का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Hordeum vulgare",
+      "Oryza sativa",
+      "Zea mays",
+      "Triticum aestivum"
+    ],
+    "answer": "Hordeum vulgare"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Bread of tropics\"?",
+    "question_hi": "किस अनाज को \"Bread of tropics\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Maize",
+      "Wheat",
+      "Sorghum"
+    ],
+    "answer": "Maize"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants provided:",
+    "question_hi": "पौधों का domestication ने क्या प्रदान किया?",
+    "options": [
+      "Permanent settlements",
+      "Nomadic lifestyle",
+      "Wild food",
+      "Hunting tools"
+    ],
+    "answer": "Permanent settlements"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from roots?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल जड़ों से प्राप्त होती है?",
+    "options": [
+      "Turmeric",
+      "Ginger",
+      "Garlic",
+      "All of the above"
+    ],
+    "answer": "All of the above"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Wheat is scientifically known as:",
+    "question_hi": "गेहूँ का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Triticum aestivum",
+      "Oryza sativa",
+      "Zea mays",
+      "Hordeum vulgare"
+    ],
+    "answer": "Triticum aestivum"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Father of cereals\"?",
+    "question_hi": "किस अनाज को \"Father of cereals\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Wheat"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants helped in:",
+    "question_hi": "पौधों का domestication किसमें सहायक रहा?",
+    "options": [
+      "Development of civilization",
+      "Increase in wild food",
+      "Hunting lifestyle",
+      "Nomadic culture"
+    ],
+    "answer": "Development of civilization"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from rhizome?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल भूमिकंद (rhizome) से प्राप्त होती है?",
+    "options": [
+      "Turmeric",
+      "Cardamom",
+      "Clove",
+      "Pepper"
+    ],
+    "answer": "Turmeric"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Sorghum is scientifically known as:",
+    "question_hi": "ज्वार (Sorghum) का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Sorghum bicolor",
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum"
+    ],
+    "answer": "Sorghum bicolor"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to Europe?",
+    "question_hi": "कौन सा अनाज यूरोप का मूल निवासी है?",
+    "options": [
+      "Rye",
+      "Rice",
+      "Maize",
+      "Sorghum"
+    ],
+    "answer": "Rye"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants led to:",
+    "question_hi": "पौधों का domestication किस परिणाम की ओर ले गया?",
+    "options": [
+      "Food surplus",
+      "Loss of agriculture",
+      "Decline in farming",
+      "Wild food increase"
+    ],
+    "answer": "Food surplus"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from fermented grains?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल किण्वित अनाज से प्राप्त होती है?",
+    "options": [
+      "Beer (Barley)",
+      "Coffee",
+      "Tea",
+      "Cocoa"
+    ],
+    "answer": "Beer (Barley)"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Pearl millet is scientifically known as:",
+    "question_hi": "बाजरा का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Pennisetum glaucum",
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum"
+    ],
+    "answer": "Pennisetum glaucum"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Millet of the poor\"?",
+    "question_hi": "किस अनाज को \"गरीबों का बाजरा\" कहा जाता है?",
+    "options": [
+      "Sorghum",
+      "Rice",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Sorghum"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants provided:",
+    "question_hi": "पौधों का domestication ने क्या प्रदान किया?",
+    "options": [
+      "Stable settlements",
+      "Wild food",
+      "Nomadic lifestyle",
+      "Hunting tools"
+    ],
+    "answer": "Stable settlements"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from fruit?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल फल से प्राप्त होती है?",
+    "options": [
+      "Black pepper",
+      "Cardamom",
+      "Clove",
+      "Cinnamon"
+    ],
+    "answer": "Black pepper"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Rye is scientifically known as:",
+    "question_hi": "राई (Rye) का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Secale cereale",
+      "Oryza sativa",
+      "Zea mays",
+      "Triticum aestivum"
+    ],
+    "answer": "Secale cereale"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to India and Africa?",
+    "question_hi": "कौन सा अनाज भारत और अफ्रीका का मूल निवासी है?",
+    "options": [
+      "Finger millet (Ragi)",
+      "Rice",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Finger millet (Ragi)"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants resulted in:",
+    "question_hi": "पौधों का domestication किस परिणाम में हुआ?",
+    "options": [
+      "Organized agriculture",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Organized agriculture"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from seeds of Theobroma cacao?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल Theobroma cacao के बीजों से प्राप्त होती है?",
+    "options": [
+      "Cocoa",
+      "Coffee",
+      "Tea",
+      "Wine grape"
+    ],
+    "answer": "Cocoa"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Finger millet is scientifically known as:",
+    "question_hi": "रागी (Finger millet) का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Eleusine coracana",
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum"
+    ],
+    "answer": "Eleusine coracana"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Nutritious millet\"?",
+    "question_hi": "किस अनाज को \"Nutritious millet\" कहा जाता है?",
+    "options": [
+      "Finger millet",
+      "Rice",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Finger millet"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants helped in:",
+    "question_hi": "पौधों का domestication किसमें सहायक रहा?",
+    "options": [
+      "Development of trade",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Development of trade"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from underground stem?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल भूमिगत तने से प्राप्त होती है?",
+    "options": [
+      "Ginger",
+      "Turmeric",
+      "Garlic",
+      "All of the above"
+    ],
+    "answer": "Ginger"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Millets belong to which family?",
+    "question_hi": "बाजरा किस कुल (family) से संबंधित है?",
+    "options": [
+      "Poaceae",
+      "Fabaceae",
+      "Solanaceae",
+      "Rubiaceae"
+    ],
+    "answer": "Poaceae"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Energy grain\"?",
+    "question_hi": "किस अनाज को \"Energy grain\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Maize",
+      "Wheat",
+      "Sorghum"
+    ],
+    "answer": "Maize"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants ensured:",
+    "question_hi": "पौधों का domestication ने क्या सुनिश्चित किया?",
+    "options": [
+      "Regular food supply",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Regular food supply"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from bulbs?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल बल्ब से प्राप्त होती है?",
+    "options": [
+      "Garlic",
+      "Ginger",
+      "Turmeric",
+      "Clove"
+    ],
+    "answer": "Garlic"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Millets are mainly cultivated in:",
+    "question_hi": "बाजरा मुख्य रूप से कहाँ उगाया जाता है?",
+    "options": [
+      "Arid and semi-arid regions",
+      "Cold regions",
+      "Rainforests",
+      "Coastal areas"
+    ],
+    "answer": "Arid and semi-arid regions"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Food of the poor\"?",
+    "question_hi": "किस अनाज को \"गरीबों का भोजन\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Millets",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Millets"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants led to:",
+    "question_hi": "पौधों का domestication किस परिणाम की ओर ले गया?",
+    "options": [
+      "Agricultural revolution",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Agricultural revolution"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from dried stigmas of flowers?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल फूलों के सूखे वर्तिकाग्र (stigmas) से प्राप्त होती है?",
+    "options": [
+      "Saffron",
+      "Cardamom",
+      "Clove",
+      "Cinnamon"
+    ],
+    "answer": "Saffron"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants provided:",
+    "question_hi": "पौधों का domestication ने क्या प्रदान किया?",
+    "options": [
+      "Basis of trade and economy",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Basis of trade and economy"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Staple food of Asia\"?",
+    "question_hi": "किस अनाज को \"एशिया का मुख्य भोजन\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Rice"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants is considered as:",
+    "question_hi": "पौधों का domestication किस रूप में माना जाता है?",
+    "options": [
+      "Foundation of human civilization",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Foundation of human civilization"
   }
 ]
