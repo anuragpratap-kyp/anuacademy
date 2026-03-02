@@ -3,12 +3,12 @@
 
 {% block content %}
 <section class="quiz-shell">
-    <h2 class="page-title">{{ subject }} - Semester {{ semester }} - {{ unit }} MCQs</h2>
+    <h2 class="page-title">{{ course_label }} | {{ subject }} - Semester {{ semester }} - {{ unit }} MCQs</h2>
 
     {% if questions|length == 0 %}
     <div class="quiz-box">
         <p>No questions available for this subject and semester.</p>
-        <a href="/subjects" class="btn">Back to Subjects</a>
+        <a href="{{ url_for('subjects', course_slug=course_slug, semester=semester) }}" class="btn">Back to Subjects</a>
     </div>
     {% else %}
     <div id="quizIntro" class="quiz-box" style="text-align:center;">
@@ -21,7 +21,7 @@
             <input type="text" id="studentMobile" placeholder="Mobile Number (10 digits)" maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="off">
         </div>
         <p><strong>{{ questions|length }} questions</strong></p>
-        <p>Total Time: <strong>{{ ((questions|length) * 30) // 60 }}m {{ ((questions|length) * 30) % 60 }}s</strong></p>
+        <p>Total Time: <strong>{{ test_duration_minutes }} minutes</strong></p>
         <p>Press start when you are ready.</p>
         <button type="button" class="btn quiz-submit-btn" id="startQuizBtn">Start MCQs</button>
     </div>
@@ -42,14 +42,24 @@
         <form method="POST" id="quizForm">
             <input type="hidden" name="student_name" id="studentNameHidden">
             <input type="hidden" name="student_mobile" id="studentMobileHidden">
+            <input type="hidden" name="question_order" value="{{ question_order }}">
             {% for q in questions %}
             {% set q_index = loop.index0 %}
             <div class="quiz-box question-step" data-step="{{ q_index }}" style="display: none;">
                 <p><strong>Q{{ loop.index }}:</strong> {{ q.question }}</p>
+                {% if q.get("question_hi") %}
+                <p class="question-hi">{{ q.get("question_hi") }}</p>
+                {% endif %}
                 <div class="options-group">
+                    {% set options_hi = q.get("options_hi") %}
                     {% for opt in q.options %}
+                    {% set opt_hi = options_hi[loop.index0] if options_hi and (options_hi|length > loop.index0) else "" %}
                     <label class="option-item">
-                        <input type="radio" name="q{{ q_index }}" value="{{ opt }}"> {{ opt }}
+                        <input type="radio" name="q{{ q_index }}" value="{{ opt }}">
+                        <span>{{ opt }}</span>
+                        {% if opt_hi %}
+                        <span class="option-hi">{{ opt_hi }}</span>
+                        {% endif %}
                     </label>
                     {% endfor %}
                 </div>
@@ -84,7 +94,7 @@
         let currentStep = 0;
         let isAutoSubmit = false;
         let timerInterval = null;
-        const totalSeconds = {{ (questions|length) * 30 }};
+        const totalSeconds = {{ test_duration_minutes * 60 }};
         let remainingSeconds = totalSeconds;
 
         function formatTime(sec) {

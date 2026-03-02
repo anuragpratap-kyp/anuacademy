@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Courses{% endblock %}
+
+{% block content %}
+<section class="semester-section">
+    <div class="section-title">
+        <h2>Select Your Course</h2>
+        <p>Choose your course to continue with semester-wise MCQ practice.</p>
+    </div>
+
+    <div class="card-container">
+        {% for course in courses %}
+            {% if course.active_semesters %}
+            <a href="{{ url_for('semesters_by_course', course_slug=course.slug) }}" class="semester-card active-semester-card">
+                <h3>{{ course.label }}</h3>
+                <p>Semester {{ course.active_semesters|join(', ') }} Live</p>
+            </a>
+            {% else %}
+            <div class="semester-card coming-soon-card">
+                <h3>{{ course.label }}</h3>
+                <p>Coming Soon</p>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

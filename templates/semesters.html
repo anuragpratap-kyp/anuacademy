@@ -4,40 +4,32 @@
 {% block content %}
 <section class="semester-section">
     <div class="section-title">
-        <h2>Select Your Semester</h2>
-        <p>Semester 4 is live now. More semesters will be added soon.</p>
+        <h2>{{ course_label }} - Select Your Semester</h2>
+        {% if active_semesters %}
+        <p>Only Semester {{ active_semesters|join(', ') }} is live now. More semesters will be added soon.</p>
+        {% else %}
+        <p>This course is coming soon. Semester-wise content will be added shortly.</p>
+        {% endif %}
     </div>
 
     <div class="card-container">
-        <div class="semester-card coming-soon-card">
-            <h3>Semester 1</h3>
-            <p>Coming Soon</p>
-        </div>
+        {% for sem in range(1, total_semesters + 1) %}
+            {% if sem in active_semesters %}
+            <a href="{{ url_for('subjects', course_slug=course_slug, semester=sem) }}" class="semester-card active-semester-card">
+                <h3>Semester {{ sem }}</h3>
+                <p>Start MCQs</p>
+            </a>
+            {% else %}
+            <div class="semester-card coming-soon-card">
+                <h3>Semester {{ sem }}</h3>
+                <p>Coming Soon</p>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-        <div class="semester-card coming-soon-card">
-            <h3>Semester 2</h3>
-            <p>Coming Soon</p>
-        </div>
-
-        <div class="semester-card coming-soon-card">
-            <h3>Semester 3</h3>
-            <p>Coming Soon</p>
-        </div>
-
-        <a href="/subjects" class="semester-card active-semester-card">
-            <h3>Semester 4</h3>
-            <p>Start MCQs</p>
-        </a>
-
-        <div class="semester-card coming-soon-card">
-            <h3>Semester 5</h3>
-            <p>Coming Soon</p>
-        </div>
-
-        <div class="semester-card coming-soon-card">
-            <h3>Semester 6</h3>
-            <p>Coming Soon</p>
-        </div>
+    <div style="text-align:center; margin-top: 24px;">
+        <a href="{{ url_for('courses') }}" class="btn">Back to Courses</a>
     </div>
 </section>
 {% endblock %}

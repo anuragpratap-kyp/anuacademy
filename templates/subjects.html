@@ -4,25 +4,21 @@
 {% block content %}
 <section class="subjects-section">
     <div class="section-header">
-        <h2>Select Subject</h2>
+        <h2>{{ course_label }} - Semester {{ semester }} Subjects</h2>
         <p>Choose a subject to view unit-wise MCQs.</p>
     </div>
 
     <div class="card-container">
-        <a href="/units/Chemistry/{{ semester|default(4) }}" class="subject-card">
-            <h3>Chemistry</h3>
-            <p>Organic, Inorganic &amp; Physical Chemistry</p>
+        {% for item in subjects %}
+        <a href="{{ url_for('units', course_slug=course_slug, subject=item.name, semester=semester) }}" class="subject-card">
+            <h3>{{ item.name }}</h3>
+            <p>{{ item.description }}</p>
         </a>
+        {% endfor %}
+    </div>
 
-        <a href="/units/Zoology/{{ semester|default(4) }}" class="subject-card">
-            <h3>Zoology</h3>
-            <p>Evolution, Ecology, Animal Physiology</p>
-        </a>
-
-        <a href="/units/Botany/{{ semester|default(4) }}" class="subject-card">
-            <h3>Botany</h3>
-            <p>Plant Physiology, Genetics, Taxonomy</p>
-        </a>
+    <div style="text-align:center; margin-top: 24px;">
+        <a href="{{ url_for('semesters_by_course', course_slug=course_slug) }}" class="btn">Back to Semesters</a>
     </div>
 </section>
 {% endblock %}

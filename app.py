@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -17,6 +18,43 @@ DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip()
 QUESTIONS_PATH = Path(__file__).with_name("questions.json")
 GALLERY_DIR = Path(__file__).with_name("static") / "gallery"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+ACTIVE_SEMESTER = 4
+TOTAL_SEMESTERS = 6
+TEST_QUESTION_LIMIT = 25
+TEST_DURATION_MINUTES = 25
+
+COURSES = [
+    {"slug": "ba", "label": "B.A"},
+    {"slug": "bsc", "label": "B.Sc"},
+    {"slug": "bcom", "label": "B.Com"},
+]
+
+COURSE_LABELS = {course["slug"]: course["label"] for course in COURSES}
+
+COURSE_SUBJECTS = {
+    "ba": [
+        {"name": "History", "description": "Ancient, Medieval and Modern topics"},
+        {"name": "Political Science", "description": "Indian polity and political theories"},
+        {"name": "Economics", "description": "Micro, macro and development concepts"},
+    ],
+    "bsc": [
+        {"name": "Chemistry", "description": "Quantum Mechanics and Analytical Techniques"},
+        {"name": "Zoology", "description": "Gene Technology, Immunology and Computational Biology"},
+        {"name": "Botany", "description": "Economic Botany,Ethomedicine and Phytochemistry"},
+        {"name": "Co-Curricular", "description": "Skill development and practical knowledge"},
+    ],
+    "bcom": [
+        {"name": "Accountancy", "description": "Financial and corporate accounting"},
+        {"name": "Business Studies", "description": "Management, organization and strategy"},
+        {"name": "Economics", "description": "Business economics and market analysis"},
+    ],
+}
+
+COURSE_ACTIVE_SEMESTERS = {
+    "ba": [],
+    "bsc": [ACTIVE_SEMESTER],
+    "bcom": [],
+}
 
 # Load questions from JSON
 with QUESTIONS_PATH.open(encoding="utf-8") as f:
@@ -118,6 +156,21 @@ def get_units_for_subject(subject, semester):
         if unit_name not in units:
             units.append(unit_name)
     return units
+
+
+def normalize_course_slug(course_slug):
+    clean_slug = (course_slug or "bsc").strip().lower()
+    if clean_slug not in COURSE_LABELS:
+        return "bsc"
+    return clean_slug
+
+
+def get_course_subjects(course_slug):
+    return COURSE_SUBJECTS.get(normalize_course_slug(course_slug), [])
+
+
+def get_active_semesters(course_slug):
+    return COURSE_ACTIVE_SEMESTERS.get(normalize_course_slug(course_slug), [])
 
 
 def normalize_database_url(url):
@@ -494,35 +547,119 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/courses")
+def courses():
+    course_cards = []
+    for course in COURSES:
+        slug = course["slug"]
+        active_semesters = get_active_semesters(slug)
+        course_cards.append(
+            {
+                "slug": slug,
+                "label": course["label"],
+                "active_semesters": active_semesters,
+            }
+        )
+    return render_template("courses.html", courses=course_cards)
+
+
 @app.route("/semesters")
 def semesters():
-    return render_template("semesters.html")
+    return redirect(url_for("courses"))
+
+
+@app.route("/semesters/<course_slug>")
+def semesters_by_course(course_slug):
+    clean_course_slug = normalize_course_slug(course_slug)
+    return render_template(
+        "semesters.html",
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+        active_semester=ACTIVE_SEMESTER,
+        active_semesters=get_active_semesters(clean_course_slug),
+        total_semesters=TOTAL_SEMESTERS,
+    )
 
 
 @app.route("/subjects")
-def subjects():
-    # For now only semester 4 is active
-    return render_template("subjects.html", semester=4)
+@app.route("/subjects/<course_slug>/<int:semester>")
+def subjects(course_slug="bsc", semester=ACTIVE_SEMESTER):
+    clean_course_slug = normalize_course_slug(course_slug)
+    if semester not in get_active_semesters(clean_course_slug):
+        return redirect(url_for("semesters_by_course", course_slug=clean_course_slug))
+
+    return render_template(
+        "subjects.html",
+        semester=semester,
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+        subjects=get_course_subjects(clean_course_slug),
+    )
 
 
+@app.route("/units/<course_slug>/<subject>/<int:semester>")
 @app.route("/units/<subject>/<int:semester>")
-def units(subject, semester):
+def units(subject, semester, course_slug="bsc"):
+    clean_course_slug = normalize_course_slug(course_slug)
     unit_list = get_units_for_subject(subject, semester)
-    return render_template("units.html", subject=subject, semester=semester, units=unit_list)
+    return render_template(
+        "units.html",
+        subject=subject,
+        semester=semester,
+        units=unit_list,
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+    )
 
 
+@app.route("/quiz/<course_slug>/<subject>/<int:semester>")
 @app.route("/quiz/<subject>/<int:semester>")
-def quiz_redirect(subject, semester):
+def quiz_redirect(subject, semester, course_slug="bsc"):
+    clean_course_slug = normalize_course_slug(course_slug)
     # Keep old URL working by redirecting to unit selection
-    return redirect(url_for("units", subject=subject, semester=semester))
+    return redirect(
+        url_for(
+            "units",
+            course_slug=clean_course_slug,
+            subject=subject,
+            semester=semester,
+        )
+    )
 
 
+@app.route("/quiz/<course_slug>/<subject>/<int:semester>/<unit>", methods=["GET", "POST"])
 @app.route("/quiz/<subject>/<int:semester>/<unit>", methods=["GET", "POST"])
-def quiz(subject, semester, unit):
-    questions = [
+def quiz(subject, semester, unit, course_slug="bsc"):
+    clean_course_slug = normalize_course_slug(course_slug)
+    unit_questions = [
         q for q in attach_units(get_subject_semester_questions(subject, semester))
         if q["unit"] == unit
     ]
+    selected_indices = list(range(len(unit_questions)))
+
+    if request.method == "POST":
+        raw_order = (request.form.get("question_order") or "").strip()
+        parsed_indices = []
+        if raw_order:
+            seen = set()
+            for token in raw_order.split(","):
+                token = token.strip()
+                if not token.isdigit():
+                    continue
+                idx = int(token)
+                if idx in seen:
+                    continue
+                if 0 <= idx < len(unit_questions):
+                    parsed_indices.append(idx)
+                    seen.add(idx)
+        if parsed_indices:
+            selected_indices = parsed_indices
+    else:
+        random.shuffle(selected_indices)
+
+    selected_indices = selected_indices[:TEST_QUESTION_LIMIT]
+    questions = [unit_questions[i] for i in selected_indices]
+    question_order = ",".join(str(i) for i in selected_indices)
 
     if request.method == "POST":
         student_name = request.form.get("student_name", "").strip()
@@ -534,6 +671,10 @@ def quiz(subject, semester, unit):
                 subject=subject,
                 semester=semester,
                 unit=unit,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=TEST_DURATION_MINUTES,
+                question_order=question_order,
                 error_message="Please enter your name.",
             )
         if not (student_mobile.isdigit() and len(student_mobile) == 10):
@@ -543,6 +684,10 @@ def quiz(subject, semester, unit):
                 subject=subject,
                 semester=semester,
                 unit=unit,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=TEST_DURATION_MINUTES,
+                question_order=question_order,
                 error_message="Mobile number must be exactly 10 digits.",
             )
 
@@ -580,6 +725,8 @@ def quiz(subject, semester, unit):
             subject=subject,
             semester=semester,
             unit=unit,
+            course_slug=clean_course_slug,
+            course_label=COURSE_LABELS[clean_course_slug],
             student_name=student_name,
             subject_rank=subject_rank,
             subject_total_students=subject_total_students,
@@ -595,6 +742,10 @@ def quiz(subject, semester, unit):
         subject=subject,
         semester=semester,
         unit=unit,
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+        test_duration_minutes=TEST_DURATION_MINUTES,
+        question_order=question_order,
         error_message="",
     )
 
@@ -626,4 +777,3 @@ def contact():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
-

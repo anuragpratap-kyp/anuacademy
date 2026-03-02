@@ -5,7 +5,7 @@
 <section class="result-shell">
     <h2 class="page-title">Your Score</h2>
     {% if subject and unit %}
-    <p>{{ subject }} | Semester {{ semester }} | {{ unit }}</p>
+    <p>{{ course_label }} | {{ subject }} | Semester {{ semester }} | {{ unit }}</p>
     {% endif %}
     <div class="quiz-box result-card">
         {% if total and total > 0 %}
@@ -37,7 +37,7 @@
         {% else %}
         <a href="{{ url_for('dashboard') }}" class="btn result-btn">View Leaderboard</a>
         {% endif %}
-        <a href="/subjects" class="btn result-btn">Back to Subjects</a>
+        <a href="{{ url_for('subjects', course_slug=course_slug, semester=semester) }}" class="btn result-btn">Back to Subjects</a>
     </div>
 </section>
 {% endblock %}
