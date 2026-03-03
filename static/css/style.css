@@ -2754,6 +2754,14 @@ a {
     color: #5d7894;
 }
 
+.notice-quick-link {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+}
+
 @media (max-width: 768px) {
     .notice-board-section {
         padding: 34px 5% 12px;
