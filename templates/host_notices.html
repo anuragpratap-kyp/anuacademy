@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block title %}Host Notices{% endblock %}
+
+{% block content %}
+<section class="notice-board-section">
+    <div class="section-title">
+        <h2>Host Notice Panel</h2>
+        <p>Only host can publish notices.</p>
+    </div>
+
+    <div class="notice-board-wrap">
+        <div class="notice-board-card">
+            <h3>Add Notice</h3>
+            <form method="post" action="{{ url_for('host_notices') }}" class="notice-form">
+                <input type="password" name="host_key" maxlength="120" placeholder="Host key" required>
+                <input type="text" name="notice_message" maxlength="220" placeholder="Type notice here..." required>
+                <div class="notice-form-actions">
+                    <button type="submit" name="action" value="add" class="btn">Post Notice</button>
+                    <button type="submit" name="action" value="clear" class="btn notice-clear-btn">Clear All Notices</button>
+                </div>
+            </form>
+            {% if status == "added" %}
+            <p class="notice-status success">Notice posted successfully.</p>
+            {% elif status == "cleared" %}
+            <p class="notice-status success">All notices cleared.</p>
+            {% elif status == "empty" %}
+            <p class="notice-status error">Notice text cannot be empty.</p>
+            {% elif status == "invalid_key" %}
+            <p class="notice-status error">Invalid host key.</p>
+            {% elif status == "host_key_missing" %}
+            <p class="notice-status error">Server host key missing. Set NOTICE_HOST_KEY in environment.</p>
+            {% endif %}
+        </div>
+
+        <div class="notice-board-card">
+            <h3>Recent Notices</h3>
+            {% if notices %}
+            <ul class="notice-list">
+                {% for notice in notices %}
+                <li>
+                    <span class="notice-message">{{ notice['message'] }}</span>
+                    <span class="notice-time">{{ notice['created_at'] }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="notice-empty">No notices yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

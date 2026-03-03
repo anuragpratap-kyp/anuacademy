@@ -17,6 +17,8 @@ app = Flask(__name__)
 DEFAULT_DB_PATH = Path(__file__).with_name("quiz_history.db")
 DB_PATH = Path(os.environ.get("DB_PATH", str(DEFAULT_DB_PATH)))
 DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip()
+if not DATABASE_URL:
+    DATABASE_URL = (os.environ.get("RENDER_DATABASE_URL") or os.environ.get("POSTGRES_URL") or "").strip()
 QUESTIONS_PATH = Path(__file__).with_name("questions.json")
 GALLERY_DIR = Path(__file__).with_name("static") / "gallery"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
@@ -38,6 +40,7 @@ SOCIAL_LINKS = {
     "youtube": (os.environ.get("SOCIAL_YOUTUBE_URL") or "https://www.youtube.com/").strip(),
     "linkedin": (os.environ.get("SOCIAL_LINKEDIN_URL") or "https://www.linkedin.com/").strip(),
 }
+NOTICE_HOST_KEY = (os.environ.get("NOTICE_HOST_KEY") or "").strip()
 
 COURSE_SUBJECTS = {
     "ba": [
@@ -216,6 +219,11 @@ def query_with_placeholders(sql):
     return sql
 
 
+def normalize_answer_text(value):
+    # Normalize whitespace and case to avoid false mismatches from formatting differences.
+    return " ".join(str(value or "").split()).strip().casefold()
+
+
 def fetchone_dict(conn, sql, params=()):
     cur = conn.cursor()
     cur.execute(query_with_placeholders(sql), params)
@@ -260,6 +268,17 @@ def init_db():
             execute_sql(
                 conn,
                 """
+                CREATE TABLE IF NOT EXISTS notices (
+                    id SERIAL PRIMARY KEY,
+                    message TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    is_active INTEGER NOT NULL DEFAULT 1
+                )
+                """,
+            ).close()
+            execute_sql(
+                conn,
+                """
                 CREATE TABLE IF NOT EXISTS students (
                     id SERIAL PRIMARY KEY,
                     name TEXT NOT NULL,
@@ -299,7 +318,34 @@ def init_db():
                   AND (attempts.student_mobile IS NULL OR attempts.student_mobile = '')
                 """,
             ).close()
+            execute_sql(
+                conn,
+                """
+                UPDATE attempts
+                SET student_name = students.name
+                FROM students
+                WHERE attempts.student_id = students.id
+                  AND students.name IS NOT NULL
+                  AND students.name != ''
+                  AND (
+                    attempts.student_name IS NULL
+                    OR attempts.student_name = ''
+                    OR LOWER(TRIM(attempts.student_name)) IN ('backend test user', 'test user', 'backend user')
+                  )
+                """,
+            ).close()
         else:
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS notices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    message TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    is_active INTEGER NOT NULL DEFAULT 1
+                )
+                """,
+            ).close()
             execute_sql(
                 conn,
                 """
@@ -348,6 +394,28 @@ def init_db():
                 )
                 WHERE (student_mobile IS NULL OR student_mobile = '')
                   AND student_id IS NOT NULL
+                """,
+            ).close()
+            execute_sql(
+                conn,
+                """
+                UPDATE attempts
+                SET student_name = (
+                    SELECT students.name
+                    FROM students
+                    WHERE students.id = attempts.student_id
+                )
+                WHERE student_id IS NOT NULL
+                  AND (
+                    student_name IS NULL
+                    OR student_name = ''
+                    OR LOWER(TRIM(student_name)) IN ('backend test user', 'test user', 'backend user')
+                  )
+                  AND (
+                    SELECT students.name
+                    FROM students
+                    WHERE students.id = attempts.student_id
+                  ) IS NOT NULL
                 """,
             ).close()
 
@@ -430,11 +498,7 @@ def save_attempt(
 
 def get_leaderboard_rows(conn, subject_filter="all", limit=10):
     clean_subject_filter = (subject_filter or "all").strip()
-    leaderboard_filters = [
-        "student_name IS NOT NULL",
-        "student_name != ''",
-        "student_id IS NOT NULL",
-    ]
+    leaderboard_filters = ["attempts.student_id IS NOT NULL"]
     leaderboard_params = []
     if clean_subject_filter != "all":
         leaderboard_filters.append("subject = ?")
@@ -447,15 +511,34 @@ def get_leaderboard_rows(conn, subject_filter="all", limit=10):
     return fetchall_dicts(
         conn,
         f"""
+        WITH normalized_attempts AS (
+            SELECT
+                attempts.student_id,
+                COALESCE(
+                    NULLIF(
+                        CASE
+                            WHEN LOWER(TRIM(COALESCE(attempts.student_name, ''))) IN ('backend test user', 'test user', 'backend user') THEN ''
+                            ELSE TRIM(COALESCE(attempts.student_name, ''))
+                        END,
+                        ''
+                    ),
+                    NULLIF(TRIM(COALESCE(students.name, '')), ''),
+                    'Unknown'
+                ) AS student_name,
+                attempts.percentage
+            FROM attempts
+            LEFT JOIN students ON students.id = attempts.student_id
+            WHERE {" AND ".join(leaderboard_filters)}
+        )
         SELECT
             student_id,
-            COALESCE(NULLIF(student_name, ''), 'Unknown') AS student_name,
+            student_name,
             MAX(percentage) AS top_percentage,
             AVG(percentage) AS avg_percentage,
             COUNT(*) AS attempts
-        FROM attempts
-        WHERE {" AND ".join(leaderboard_filters)}
-        GROUP BY student_name, student_id
+        FROM normalized_attempts
+        WHERE student_name != 'Unknown'
+        GROUP BY student_id, student_name
         ORDER BY top_percentage DESC, avg_percentage DESC, attempts DESC, student_name ASC
         {limit_clause}
         """,
@@ -564,11 +647,30 @@ def get_dashboard_data(subject_filter="all"):
     recent_attempts = fetchall_dicts(
         conn,
         f"""
-        SELECT attempted_at, subject, semester, unit, score, total, percentage, result_status,
-               student_name
+        SELECT
+            attempts.attempted_at,
+            attempts.subject,
+            attempts.semester,
+            attempts.unit,
+            attempts.score,
+            attempts.total,
+            attempts.percentage,
+            attempts.result_status,
+            COALESCE(
+                NULLIF(
+                    CASE
+                        WHEN LOWER(TRIM(COALESCE(attempts.student_name, ''))) IN ('backend test user', 'test user', 'backend user') THEN ''
+                        ELSE TRIM(COALESCE(attempts.student_name, ''))
+                    END,
+                    ''
+                ),
+                NULLIF(TRIM(COALESCE(students.name, '')), ''),
+                'Unknown'
+            ) AS student_name
         FROM attempts
+        LEFT JOIN students ON students.id = attempts.student_id
         {analytics_where}
-        ORDER BY id DESC
+        ORDER BY attempts.id DESC
         LIMIT 10
         """,
         tuple(analytics_params),
@@ -680,15 +782,75 @@ def get_attempts_for_export(subject_filter="all"):
     rows = fetchall_dicts(
         conn,
         f"""
-        SELECT attempted_at, subject, semester, unit, student_name, score, total, percentage, result_status
+        SELECT
+            attempts.attempted_at,
+            attempts.subject,
+            attempts.semester,
+            attempts.unit,
+            COALESCE(
+                NULLIF(
+                    CASE
+                        WHEN LOWER(TRIM(COALESCE(attempts.student_name, ''))) IN ('backend test user', 'test user', 'backend user') THEN ''
+                        ELSE TRIM(COALESCE(attempts.student_name, ''))
+                    END,
+                    ''
+                ),
+                NULLIF(TRIM(COALESCE(students.name, '')), ''),
+                'Unknown'
+            ) AS student_name,
+            attempts.score,
+            attempts.total,
+            attempts.percentage,
+            attempts.result_status
         FROM attempts
+        LEFT JOIN students ON students.id = attempts.student_id
         {where_clause}
-        ORDER BY id DESC
+        ORDER BY attempts.id DESC
         """,
         tuple(params),
     )
     conn.close()
     return rows
+
+
+def add_notice(message):
+    clean_message = " ".join((message or "").split()).strip()
+    if not clean_message:
+        return False
+
+    conn = get_db_connection()
+    execute_sql(
+        conn,
+        "INSERT INTO notices (message, created_at, is_active) VALUES (?, ?, 1)",
+        (clean_message, datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+    ).close()
+    conn.commit()
+    conn.close()
+    return True
+
+
+def get_active_notices(limit=5):
+    conn = get_db_connection()
+    rows = fetchall_dicts(
+        conn,
+        """
+        SELECT id, message, created_at
+        FROM notices
+        WHERE is_active = 1
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (int(limit),),
+    )
+    conn.close()
+    return rows
+
+
+def deactivate_all_notices():
+    conn = get_db_connection()
+    execute_sql(conn, "UPDATE notices SET is_active = 0 WHERE is_active = 1").close()
+    conn.commit()
+    conn.close()
 
 
 init_db()
@@ -697,7 +859,37 @@ init_db()
 # ===== ROUTES =====
 @app.route("/")
 def home():
-    return render_template("index.html")
+    notices = get_active_notices(limit=5)
+    return render_template("index.html", notices=notices)
+
+
+@app.route("/notices", methods=["POST"])
+def create_notice():
+    return redirect(url_for("host_notices"))
+
+
+@app.route("/host/notices", methods=["GET", "POST"])
+def host_notices():
+    status = ""
+    if request.method == "POST":
+        host_key = (request.form.get("host_key") or "").strip()
+        notice_message = request.form.get("notice_message", "")
+        action = (request.form.get("action") or "add").strip()
+
+        if not NOTICE_HOST_KEY:
+            status = "host_key_missing"
+        elif host_key != NOTICE_HOST_KEY:
+            status = "invalid_key"
+        elif action == "clear":
+            deactivate_all_notices()
+            status = "cleared"
+        elif add_notice(notice_message):
+            status = "added"
+        else:
+            status = "empty"
+
+    notices = get_active_notices(limit=10)
+    return render_template("host_notices.html", notices=notices, status=status)
 
 
 @app.route("/courses")
@@ -805,8 +997,20 @@ def quiz(subject, semester, unit, course_slug="bsc"):
                 if 0 <= idx < len(unit_questions):
                     parsed_indices.append(idx)
                     seen.add(idx)
-        if parsed_indices:
-            selected_indices = parsed_indices
+        if not parsed_indices:
+            return render_template(
+                "quiz.html",
+                questions=questions,
+                subject=subject,
+                semester=semester,
+                unit=unit,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=TEST_DURATION_MINUTES,
+                question_order=question_order,
+                error_message="Quiz session mismatch detected. Please restart this test.",
+            )
+        selected_indices = parsed_indices
     else:
         random.shuffle(selected_indices)
 
@@ -848,7 +1052,9 @@ def quiz(subject, semester, unit, course_slug="bsc"):
         total = len(questions)
 
         for i, q in enumerate(questions):
-            if request.form.get(f"q{i}") == q["answer"]:
+            submitted = request.form.get(f"q{i}")
+            expected = q.get("answer")
+            if normalize_answer_text(submitted) == normalize_answer_text(expected):
                 score += 1
 
         percentage = round((score / total) * 100, 2) if total > 0 else 0

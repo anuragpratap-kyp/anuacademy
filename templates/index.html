@@ -20,6 +20,32 @@
     </div>
 </section>
 
+<!-- ================= NOTICE BOARD ================= -->
+<section class="notice-board-section">
+    <div class="section-title">
+        <h2>Notice Board</h2>
+        <p>Latest updates and announcements.</p>
+    </div>
+
+    <div class="notice-board-wrap">
+        <div class="notice-board-card">
+            <h3>Recent Notices</h3>
+            {% if notices %}
+            <ul class="notice-list">
+                {% for notice in notices %}
+                <li>
+                    <span class="notice-message">{{ notice['message'] }}</span>
+                    <span class="notice-time">{{ notice['created_at'] }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="notice-empty">No notices yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
 <!-- ================= FEATURES ================= -->
 <section class="features">
     <div class="section-title">

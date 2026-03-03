@@ -67,8 +67,8 @@
             {% endfor %}
 
             <div class="quiz-actions">
-                <button type="button" class="btn quiz-nav-btn" id="prevBtn">Previous</button>
-                <button type="button" class="btn quiz-nav-btn" id="nextBtn">Next</button>
+                <button type="button" class="btn quiz-nav-btn" id="prevBtn" aria-label="Go to previous question">&lt; Previous</button>
+                <button type="button" class="btn quiz-nav-btn" id="nextBtn" aria-label="Go to next question">Next &gt;</button>
                 <button type="submit" class="btn quiz-submit-btn" id="submitBtn" style="display:none;">Submit MCQs</button>
             </div>
         </form>
@@ -93,9 +93,20 @@
 
         let currentStep = 0;
         let isAutoSubmit = false;
+        let quizStarted = false;
+        let forceExitTriggered = false;
         let timerInterval = null;
         const totalSeconds = {{ test_duration_minutes * 60 }};
         let remainingSeconds = totalSeconds;
+        const exitUrl = "{{ url_for('subjects', course_slug=course_slug, semester=semester) }}";
+
+        function forceExitQuiz(reasonMessage) {
+            if (!quizStarted || forceExitTriggered || isAutoSubmit) return;
+            forceExitTriggered = true;
+            clearInterval(timerInterval);
+            alert(reasonMessage || "You left the quiz tab. Quiz has been closed.");
+            window.location.href = exitUrl;
+        }
 
         function formatTime(sec) {
             const mm = String(Math.floor(sec / 60)).padStart(2, "0");
@@ -105,9 +116,13 @@
 
         function showStep(index) {
             steps.forEach((s, i) => s.style.display = i === index ? "block" : "none");
-            prevBtn.style.display = index === 0 ? "none" : "inline-block";
-            nextBtn.style.display = index === steps.length - 1 ? "none" : "inline-block";
-            submitBtn.style.display = index === steps.length - 1 ? "inline-block" : "none";
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === steps.length - 1;
+            submitBtn.disabled = index !== steps.length - 1;
+            submitBtn.style.display = "inline-block";
+            prevBtn.classList.toggle("is-disabled", prevBtn.disabled);
+            nextBtn.classList.toggle("is-disabled", nextBtn.disabled);
+            submitBtn.classList.toggle("is-disabled", submitBtn.disabled);
             progressText.innerHTML = `<strong>Question ${index + 1} / ${steps.length}</strong>`;
         }
 
@@ -157,6 +172,7 @@
 
             studentNameHidden.value = nameValue;
             studentMobileHidden.value = mobileValue;
+            quizStarted = true;
 
             intro.style.display = "none";
             quizStage.style.display = "block";
@@ -206,6 +222,23 @@
             if (!isAutoSubmit && !isAnswered(currentStep)) {
                 e.preventDefault();
                 alert("Please select an option before submitting.");
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (quizStage.style.display === "none") return;
+            if (event.target && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
+
+            if (event.key === "ArrowLeft" && !prevBtn.disabled) {
+                prevBtn.click();
+            } else if (event.key === "ArrowRight" && !nextBtn.disabled) {
+                nextBtn.click();
+            }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                forceExitQuiz("Tab switch detected. Quiz has been closed.");
             }
         });
     </script>
