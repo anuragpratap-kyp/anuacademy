@@ -6,7 +6,7 @@ import csv
 from io import StringIO
 from datetime import datetime
 from pathlib import Path
-from flask import Flask, Response, redirect, render_template, request, url_for
+from flask import Flask, Response, jsonify, redirect, render_template, request, url_for
 
 try:
     import psycopg2
@@ -943,6 +943,31 @@ def dashboard_export_csv():
         output.getvalue(),
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@app.route("/debug-db")
+def debug_db():
+    conn = get_db_connection()
+    try:
+        attempts_count = fetchone_dict(conn, "SELECT COUNT(*) AS count FROM attempts")["count"]
+        students_count = fetchone_dict(conn, "SELECT COUNT(*) AS count FROM students")["count"]
+    finally:
+        conn.close()
+
+    active_db = "postgres" if using_postgres() else "sqlite"
+    db_target = normalize_database_url(DATABASE_URL) if using_postgres() else str(DB_PATH)
+
+    return jsonify(
+        {
+            "active_db": active_db,
+            "db_target": db_target,
+            "counts": {
+                "students": int(students_count or 0),
+                "attempts": int(attempts_count or 0),
+            },
+            "server_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
     )
 
 

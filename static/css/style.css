@@ -2549,3 +2549,45 @@ a {
         height: 220px !important;
     }
 }
+
+/* ===== QUIZ PREVIOUS BUTTON (RED) ===== */
+#prevBtn {
+    background: linear-gradient(45deg, #dc2626, #ef4444);
+    color: #ffffff;
+}
+
+#prevBtn:hover {
+    box-shadow: 0 10px 24px rgba(220, 38, 38, 0.28);
+}
+
+/* ===== FILTER + ABOUT TEXT FIX ===== */
+.leaderboard-filter label {
+    color: #2f3742;
+    font-weight: 700;
+}
+
+.leaderboard-filter select {
+    background: #ffffff;
+    color: #2f3742;
+    border: 1px solid #bdd3e6;
+}
+
+.leaderboard-filter select:focus {
+    border-color: #1f4fbf;
+    box-shadow: 0 0 0 3px rgba(31, 79, 191, 0.16);
+}
+
+.about-me-card {
+    background: #f7fcff;
+    border: 1px solid #dbeaf6;
+}
+
+.about-me-card h3 {
+    color: #1f4fbf;
+}
+
+.about-me-card p {
+    color: #2f3742;
+    line-height: 1.85;
+    letter-spacing: 0.1px;
+}
