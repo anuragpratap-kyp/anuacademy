@@ -22,6 +22,11 @@
             </div>
             {% endif %}
         {% endfor %}
+
+        <a href="{{ url_for('test_start') }}" class="semester-card test-option-card">
+            <h3>Test</h3>
+            <p>Start timed test mode</p>
+        </a>
     </div>
 </section>
 {% endblock %}

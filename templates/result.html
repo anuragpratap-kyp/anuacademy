@@ -4,12 +4,28 @@
 {% block content %}
 <section class="result-shell">
     <h2 class="page-title">Your Score</h2>
-    {% if subject and unit %}
+    {% if subject and unit and not is_test_result %}
     <p>{{ course_label }} | {{ subject }} | Semester {{ semester }} | {{ unit }}</p>
     {% endif %}
     <div class="quiz-box result-card">
         {% if total and total > 0 %}
+        {% if not is_test_result %}
         <p>You scored {{ score }} out of {{ total }}</p>
+        {% endif %}
+        {% if is_test_result %}
+        <p><strong>Test Score:</strong> {{ score }}/{{ total }}</p>
+        {% if email %}
+            {% if email_sent %}
+            <p>Score has been sent to {{ email }}.</p>
+            {% elif email_status == "smtp_not_configured" %}
+            <p>Email not sent: mail service is not configured on server.</p>
+            {% elif email_status == "send_failed" %}
+            <p>Email not sent: delivery failed, please try later.</p>
+            {% elif email_status == "invalid_email" %}
+            <p>Email not sent: invalid email address.</p>
+            {% endif %}
+        {% endif %}
+        {% else %}
         <p>Percentage: {{ percentage }}%</p>
         <p class="result-status {{ 'status-pass' if result_status == 'Pass' else 'status-fail' }}">
             Result: {{ result_status }}
@@ -26,16 +42,23 @@
         <p><strong>Overall Percentile:</strong> {{ overall_percentile }}%</p>
         {% endif %}
         {% endif %}
+        {% endif %}
         {% else %}
         <p>No quiz result is available yet.</p>
         <p>Take a quiz to see your score, rank, and percentile.</p>
         {% endif %}
     </div>
     <div class="result-actions">
+        {% if show_leaderboard is not defined or show_leaderboard %}
         {% if subject %}
         <a href="{{ url_for('dashboard', subject=subject) }}" class="btn result-btn">View Leaderboard</a>
         {% else %}
         <a href="{{ url_for('dashboard') }}" class="btn result-btn">View Leaderboard</a>
+        {% endif %}
+        {% endif %}
+        {% if is_test_result %}
+        <a href="{{ test_start_url if test_start_url is defined else url_for('test_start') }}" class="btn result-btn">Take Another Test</a>
+        <a href="{{ url_for('home') }}" class="btn result-btn">Back to Home</a>
         {% endif %}
         <a href="{{ url_for('subjects', course_slug=course_slug, semester=semester) }}" class="btn result-btn">Back to Subjects</a>
     </div>

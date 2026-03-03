@@ -1,23 +1,23 @@
 {% extends "layout.html" %}
-{% block title %}Semesters{% endblock %}
+{% block title %}Test Semesters{% endblock %}
 
 {% block content %}
 <section class="semester-section">
     <div class="section-title">
-        <h2>{{ course_label }} - Select Your Semester</h2>
+        <h2>{{ course_label }} - Test Semester</h2>
         {% if active_semesters %}
-        <p>Only Semester {{ active_semesters|join(', ') }} is live now. More semesters will be added soon.</p>
+        <p>Select semester to continue with test units.</p>
         {% else %}
-        <p>This course is coming soon. Semester-wise content will be added shortly.</p>
+        <p>This course test is coming soon.</p>
         {% endif %}
     </div>
 
     <div class="card-container">
         {% for sem in range(1, total_semesters + 1) %}
             {% if sem in active_semesters %}
-            <a href="{{ url_for('subjects', course_slug=course_slug, semester=sem) }}" class="semester-card active-semester-card">
+            <a href="{{ url_for('test_units_by_semester', course_slug=course_slug, semester=sem) }}" class="semester-card active-semester-card">
                 <h3>Semester {{ sem }}</h3>
-                <p>Start MCQs</p>
+                <p>Open Test Units</p>
             </a>
             {% else %}
             <div class="semester-card coming-soon-card">
@@ -29,10 +29,7 @@
     </div>
 
     <div style="text-align:center; margin-top: 24px;">
-        {% if active_semesters %}
-        <a href="{{ url_for('test_semesters', course_slug=course_slug) }}" class="btn">Go to Test</a>
-        {% endif %}
-        <a href="{{ url_for('courses') }}" class="btn">Back to Courses</a>
+        <a href="{{ url_for('semesters_by_course', course_slug=course_slug) }}" class="btn">Back to Semesters</a>
     </div>
 </section>
 {% endblock %}

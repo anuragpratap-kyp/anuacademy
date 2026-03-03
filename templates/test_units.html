@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Test Units{% endblock %}
+
+{% block content %}
+<section class="subjects-section">
+    <div class="section-header">
+        <h2>{{ course_label }} - Semester {{ semester }} Test Units</h2>
+        <p>Select a unit to start test.</p>
+    </div>
+
+    <div class="card-container">
+        {% if units %}
+            {% for unit_name in units %}
+            <a href="{{ url_for('subject_test', course_slug=course_slug, semester=semester, unit=unit_name) }}" class="subject-card">
+                <h3>{{ unit_name }}</h3>
+                <p>Start Test</p>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div class="subject-card coming-soon-card" style="cursor: default;">
+                <h3>No Test Units Available</h3>
+                <p>Mark questions with test pool to enable this unit.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="text-align:center; margin-top: 24px;">
+        <a href="{{ url_for('test_semesters', course_slug=course_slug) }}" class="btn">Back to Test Semesters</a>
+    </div>
+</section>
+{% endblock %}

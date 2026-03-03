@@ -21,6 +21,8 @@
     </form>
     <div class="export-actions">
         <a class="btn export-btn" href="{{ url_for('dashboard_export_csv', subject=selected_subject) }}">Download CSV Report</a>
+        <a class="btn export-btn export-btn-secondary" href="{{ url_for('test_entries') }}">View Test Entries</a>
+        <a class="btn export-btn export-btn-secondary" href="{{ url_for('test_entries_export_csv') }}">Download Test CSV</a>
         <button type="button" class="btn export-btn export-btn-secondary" onclick="window.print()">Print / Save PDF</button>
     </div>
 

@@ -2648,26 +2648,85 @@ a {
 
 /* ===== HOME NOTICE BOARD ===== */
 .notice-board-section {
-    padding: 42px 8% 20px;
+    padding: 48px 8% 24px;
+    position: relative;
 }
 
 .notice-board-wrap {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
+    gap: 22px;
 }
 
 .notice-board-card {
-    background: #ffffff;
-    border: 1px solid #dbeaf6;
-    border-radius: 14px;
-    box-shadow: 0 10px 24px rgba(26, 56, 91, 0.08);
-    padding: 18px;
+    position: relative;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.97), rgba(244, 250, 255, 0.95));
+    border: 1px solid #cfe3f6;
+    border-radius: 18px;
+    box-shadow: 0 18px 42px rgba(17, 52, 89, 0.12);
+    padding: 22px 22px 20px;
+    overflow: hidden;
+}
+
+.notice-board-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, #2f89d9, #1f6fb2);
+}
+
+.notice-board-card-primary::after {
+    content: "";
+    position: absolute;
+    inset: auto -40px -40px auto;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 120, 194, 0.16), rgba(59, 120, 194, 0));
+    pointer-events: none;
 }
 
 .notice-board-card h3 {
-    color: var(--primary);
-    margin-bottom: 10px;
+    color: #123f6b;
+    margin-bottom: 12px;
+    letter-spacing: 0.1px;
+}
+
+.notice-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.notice-live-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f5132;
+    background: linear-gradient(180deg, #d1fae5, #a7f3d0);
+    border: 1px solid #6ee7b7;
+}
+
+.notice-helper {
+    color: #4f6880;
+    margin-bottom: 14px;
+    font-size: 14px;
+}
+
+.notice-quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .notice-form {
@@ -2684,18 +2743,19 @@ a {
 
 .notice-form input {
     width: 100%;
-    min-height: 44px;
-    border: 1px solid #bdd3e6;
-    border-radius: 10px;
+    min-height: 46px;
+    border: 1px solid #bfd7ec;
+    border-radius: 12px;
     padding: 10px 12px;
     font-size: 15px;
     color: #2f3742;
+    background: #fcfeff;
 }
 
 .notice-form input:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(31, 79, 191, 0.15);
+    border-color: #2f89d9;
+    box-shadow: 0 0 0 3px rgba(47, 137, 217, 0.15);
 }
 
 .notice-form .btn {
@@ -2727,48 +2787,66 @@ a {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .notice-list li {
-    background: #f7fbff;
-    border: 1px solid #e0edf9;
-    border-radius: 10px;
-    padding: 10px 12px;
+    background: linear-gradient(180deg, #f8fbff, #f1f8ff);
+    border: 1px solid #d6e8f8;
+    border-radius: 12px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .notice-message {
-    color: #1f3550;
+    color: #173b5f;
     font-weight: 600;
+    line-height: 1.4;
 }
 
 .notice-time {
-    color: #5d7894;
+    color: #567390;
     font-size: 12px;
+    font-weight: 500;
 }
 
 .notice-empty {
     color: #5d7894;
+    padding: 12px 0;
 }
 
 .notice-quick-link {
-    margin-top: 4px;
+    margin-top: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 46px;
+    width: 100%;
+    border-radius: 12px;
+}
+
+.notice-quick-link-alt {
+    background: linear-gradient(45deg, #1f6fb2, #2f89d9);
+}
+
+.notice-quick-link-alt:hover {
+    background: linear-gradient(45deg, #2f89d9, #4aa1e8);
 }
 
 @media (max-width: 768px) {
     .notice-board-section {
-        padding: 34px 5% 12px;
+        padding: 36px 5% 14px;
     }
 
     .notice-board-wrap {
         grid-template-columns: 1fr;
+    }
+
+    .notice-board-card {
+        padding: 18px 16px 16px;
+        border-radius: 14px;
     }
 
     .notice-form .btn {
@@ -2779,4 +2857,21 @@ a {
     .notice-form-actions {
         width: 100%;
     }
+}
+
+.test-option-card {
+    width: 280px;
+    min-height: 0;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.test-option-card p {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.test-option-card:hover {
+    background: linear-gradient(45deg, #00f2fe, #4facfe);
+    color: black;
 }

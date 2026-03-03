@@ -1,0 +1,275 @@
+{% extends "layout.html" %}
+{% block title %}Subject Test{% endblock %}
+
+{% block content %}
+<section class="quiz-shell">
+    <h2 class="page-title">{{ course_label }} | {{ subject_label }} - Semester {{ semester }} - {{ unit }} Test</h2>
+    {% if test_window is defined and test_window.enabled %}
+    <p style="text-align:center; margin-top:-6px; margin-bottom:16px;">
+        Test Window: <strong>{{ test_window.open_label }}</strong> to <strong>{{ test_window.close_label }}</strong>
+    </p>
+    {% endif %}
+
+    {% if questions|length == 0 %}
+    <div class="quiz-box">
+        <p>No questions available for this subject and semester.</p>
+        <a href="{{ url_for('test_units_by_semester', course_slug=course_slug, semester=semester) }}" class="btn">Back to Test Units</a>
+    </div>
+    {% else %}
+    <div id="quizIntro" class="quiz-box" style="text-align:center;">
+        <p><strong>Enter Test Details</strong></p>
+        {% if error_message %}
+        <p style="color: #ffb3b3; margin-bottom: 10px;">{{ error_message }}</p>
+        {% endif %}
+        <div class="student-form">
+            <input type="text" id="nameInput" placeholder="Name" maxlength="80">
+            <input type="text" id="studentIdInput" placeholder="Student ID" maxlength="40">
+            <input type="text" id="subjectInput" value="{{ subject_label }}" readonly>
+            <input type="text" id="classInput" placeholder="Class" maxlength="40">
+            <input type="email" id="emailInput" placeholder="Email">
+        </div>
+        <p><strong>{{ questions|length }} questions</strong></p>
+        <p>Total Time: <strong>{{ test_duration_minutes }} minutes</strong></p>
+        <p>Press start when you are ready.</p>
+        <button type="button" class="btn quiz-submit-btn" id="startQuizBtn">Start Test</button>
+    </div>
+
+    <div id="quizStage" style="display:none;">
+        <div class="quiz-meta">
+            <p id="progressText" class="quiz-progress"><strong>Question 1 / {{ questions|length }}</strong></p>
+            <div class="quiz-timer-wrap">
+                <span class="timer-label">Time Left</span>
+                <span id="timerText" class="quiz-timer">00:00</span>
+            </div>
+        </div>
+
+        <div class="timer-track" aria-hidden="true">
+            <div id="timerBar" class="timer-fill"></div>
+        </div>
+
+        <form method="POST" id="quizForm">
+            <input type="hidden" name="name" id="nameHidden">
+            <input type="hidden" name="student_identifier" id="studentIdHidden">
+            <input type="hidden" name="subject_entry" id="subjectHidden">
+            <input type="hidden" name="class_name" id="classHidden">
+            <input type="hidden" name="email" id="emailHidden">
+            <input type="hidden" name="question_order" value="{{ question_order }}">
+            {% for q in questions %}
+            {% set q_index = loop.index0 %}
+            <div class="quiz-box question-step" data-step="{{ q_index }}" style="display: none;">
+                <p><strong>Q{{ loop.index }}:</strong> {{ q.question }}</p>
+                {% if q.get("question_hi") %}
+                <p class="question-hi">{{ q.get("question_hi") }}</p>
+                {% endif %}
+                <div class="options-group">
+                    {% set options_hi = q.get("options_hi") %}
+                    {% for opt in q.options %}
+                    {% set opt_hi = options_hi[loop.index0] if options_hi and (options_hi|length > loop.index0) else "" %}
+                    <label class="option-item">
+                        <input type="radio" name="q{{ q_index }}" value="{{ opt }}">
+                        <span>{{ opt }}</span>
+                        {% if opt_hi %}
+                        <span class="option-hi">{{ opt_hi }}</span>
+                        {% endif %}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="quiz-actions">
+                <button type="button" class="btn quiz-nav-btn" id="prevBtn" aria-label="Go to previous question">&lt; Previous</button>
+                <button type="button" class="btn quiz-nav-btn" id="nextBtn" aria-label="Go to next question">Next &gt;</button>
+                <button type="submit" class="btn quiz-submit-btn" id="submitBtn" style="display:none;">Submit Test</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const intro = document.getElementById("quizIntro");
+        const quizStage = document.getElementById("quizStage");
+        const startQuizBtn = document.getElementById("startQuizBtn");
+        const steps = document.querySelectorAll(".question-step");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const submitBtn = document.getElementById("submitBtn");
+        const progressText = document.getElementById("progressText");
+        const timerText = document.getElementById("timerText");
+        const timerBar = document.getElementById("timerBar");
+        const quizForm = document.getElementById("quizForm");
+
+        const nameInput = document.getElementById("nameInput");
+        const studentIdInput = document.getElementById("studentIdInput");
+        const subjectInput = document.getElementById("subjectInput");
+        const classInput = document.getElementById("classInput");
+        const emailInput = document.getElementById("emailInput");
+
+        const nameHidden = document.getElementById("nameHidden");
+        const studentIdHidden = document.getElementById("studentIdHidden");
+        const subjectHidden = document.getElementById("subjectHidden");
+        const classHidden = document.getElementById("classHidden");
+        const emailHidden = document.getElementById("emailHidden");
+
+        let currentStep = 0;
+        let isAutoSubmit = false;
+        let quizStarted = false;
+        let forceExitTriggered = false;
+        let timerInterval = null;
+        const totalSeconds = {{ test_duration_minutes * 60 }};
+        let remainingSeconds = totalSeconds;
+        const exitUrl = "{{ url_for('test_units_by_semester', course_slug=course_slug, semester=semester) }}";
+
+        function forceExitQuiz(reasonMessage) {
+            if (!quizStarted || forceExitTriggered || isAutoSubmit) return;
+            forceExitTriggered = true;
+            clearInterval(timerInterval);
+            alert(reasonMessage || "You left the quiz tab. Test has been closed.");
+            window.location.href = exitUrl;
+        }
+
+        function formatTime(sec) {
+            const mm = String(Math.floor(sec / 60)).padStart(2, "0");
+            const ss = String(sec % 60).padStart(2, "0");
+            return `${mm}:${ss}`;
+        }
+
+        function showStep(index) {
+            steps.forEach((s, i) => s.style.display = i === index ? "block" : "none");
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === steps.length - 1;
+            submitBtn.disabled = index !== steps.length - 1;
+            submitBtn.style.display = "inline-block";
+            prevBtn.classList.toggle("is-disabled", prevBtn.disabled);
+            nextBtn.classList.toggle("is-disabled", nextBtn.disabled);
+            submitBtn.classList.toggle("is-disabled", submitBtn.disabled);
+            progressText.innerHTML = `<strong>Question ${index + 1} / ${steps.length}</strong>`;
+        }
+
+        function isAnswered(stepIndex) {
+            return document.querySelector(`input[name="q${stepIndex}"]:checked`) !== null;
+        }
+
+        function updateTimerUI() {
+            timerText.textContent = formatTime(remainingSeconds);
+            const percent = totalSeconds > 0 ? (remainingSeconds / totalSeconds) * 100 : 0;
+            timerBar.style.width = `${percent}%`;
+            if (remainingSeconds <= 30) {
+                timerText.classList.add("timer-warning");
+                timerBar.classList.add("timer-warning-fill");
+            }
+        }
+
+        function startTimer() {
+            updateTimerUI();
+            timerInterval = setInterval(() => {
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    isAutoSubmit = true;
+                    quizForm.submit();
+                    return;
+                }
+                remainingSeconds--;
+                updateTimerUI();
+            }, 1000);
+        }
+
+        startQuizBtn.addEventListener("click", () => {
+            const nameValue = nameInput.value.trim();
+            const studentIdValue = studentIdInput.value.trim();
+            const subjectValue = subjectInput.value.trim();
+            const classValue = classInput.value.trim();
+            const emailValue = emailInput.value.trim();
+
+            if (!nameValue) {
+                alert("Please enter name.");
+                nameInput.focus();
+                return;
+            }
+            if (!studentIdValue) {
+                alert("Please enter student ID.");
+                studentIdInput.focus();
+                return;
+            }
+            if (!subjectValue) {
+                alert("Please enter subject.");
+                subjectInput.focus();
+                return;
+            }
+            if (!classValue) {
+                alert("Please enter class.");
+                classInput.focus();
+                return;
+            }
+            if (!emailValue) {
+                alert("Please enter email.");
+                emailInput.focus();
+                return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+                alert("Please enter a valid email address.");
+                emailInput.focus();
+                return;
+            }
+
+            nameHidden.value = nameValue;
+            studentIdHidden.value = studentIdValue;
+            subjectHidden.value = subjectValue;
+            classHidden.value = classValue;
+            emailHidden.value = emailValue;
+            quizStarted = true;
+
+            intro.style.display = "none";
+            quizStage.style.display = "block";
+            showStep(currentStep);
+            startTimer();
+        });
+
+        nextBtn.addEventListener("click", () => {
+            if (!isAnswered(currentStep)) {
+                alert("Please select an option before going next.");
+                return;
+            }
+            currentStep++;
+            showStep(currentStep);
+        });
+
+        prevBtn.addEventListener("click", () => {
+            currentStep--;
+            showStep(currentStep);
+        });
+
+        quizForm.addEventListener("submit", (e) => {
+            if (!isAutoSubmit && !isAnswered(currentStep)) {
+                e.preventDefault();
+                alert("Please select an option before submitting.");
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (quizStage.style.display === "none") return;
+            if (event.target && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
+
+            if (event.key === "ArrowLeft" && !prevBtn.disabled) {
+                prevBtn.click();
+            } else if (event.key === "ArrowRight" && !nextBtn.disabled) {
+                nextBtn.click();
+            }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                forceExitQuiz("Tab switch detected. Test has been closed.");
+            }
+        });
+
+        window.addEventListener("blur", () => {
+            forceExitQuiz("Window focus lost. Test has been closed.");
+        });
+
+        window.addEventListener("pagehide", () => {
+            forceExitQuiz("Navigation detected. Test has been closed.");
+        });
+    </script>
+    {% endif %}
+</section>
+{% endblock %}

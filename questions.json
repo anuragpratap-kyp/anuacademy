@@ -1398,5 +1398,305 @@
       "Nomadic lifestyle"
     ],
     "answer": "Foundation of human civilization"
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Father of cereals\"?",
+    "question_hi": "किस अनाज को \"Father of cereals\" कहा जाता है?",
+    "options": [
+      "Rice",
+      "Wheat",
+      "Maize",
+      "Barley"
+    ],
+    "answer": "Wheat",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants helped in:",
+    "question_hi": "पौधों का domestication किसमें सहायक रहा?",
+    "options": [
+      "Development of civilization",
+      "Increase in wild food",
+      "Hunting lifestyle",
+      "Nomadic culture"
+    ],
+    "answer": "Development of civilization",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from rhizome?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल भूमिकंद (rhizome) से प्राप्त होती है?",
+    "options": [
+      "Turmeric",
+      "Cardamom",
+      "Clove",
+      "Pepper"
+    ],
+    "answer": "Turmeric",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Sorghum is scientifically known as:",
+    "question_hi": "ज्वार (Sorghum) का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Sorghum bicolor",
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum"
+    ],
+    "answer": "Sorghum bicolor",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to Europe?",
+    "question_hi": "कौन सा अनाज यूरोप का मूल निवासी है?",
+    "options": [
+      "Rye",
+      "Rice",
+      "Maize",
+      "Sorghum"
+    ],
+    "answer": "Rye",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants led to:",
+    "question_hi": "पौधों का domestication किस परिणाम की ओर ले गया?",
+    "options": [
+      "Food surplus",
+      "Loss of agriculture",
+      "Decline in farming",
+      "Wild food increase"
+    ],
+    "answer": "Food surplus",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from fermented grains?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल किण्वित अनाज से प्राप्त होती है?",
+    "options": [
+      "Beer (Barley)",
+      "Coffee",
+      "Tea",
+      "Cocoa"
+    ],
+    "answer": "Beer (Barley)",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Pearl millet is scientifically known as:",
+    "question_hi": "बाजरा का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Pennisetum glaucum",
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum"
+    ],
+    "answer": "Pennisetum glaucum",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Millet of the poor\"?",
+    "question_hi": "किस अनाज को \"गरीबों का बाजरा\" कहा जाता है?",
+    "options": [
+      "Sorghum",
+      "Rice",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Sorghum",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants provided:",
+    "question_hi": "पौधों का domestication ने क्या प्रदान किया?",
+    "options": [
+      "Stable settlements",
+      "Wild food",
+      "Nomadic lifestyle",
+      "Hunting tools"
+    ],
+    "answer": "Stable settlements",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from fruit?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल फल से प्राप्त होती है?",
+    "options": [
+      "Black pepper",
+      "Cardamom",
+      "Clove",
+      "Cinnamon"
+    ],
+    "answer": "Black pepper",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Rye is scientifically known as:",
+    "question_hi": "राई (Rye) का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Secale cereale",
+      "Oryza sativa",
+      "Zea mays",
+      "Triticum aestivum"
+    ],
+    "answer": "Secale cereale",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is native to India and Africa?",
+    "question_hi": "कौन सा अनाज भारत और अफ्रीका का मूल निवासी है?",
+    "options": [
+      "Finger millet (Ragi)",
+      "Rice",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Finger millet (Ragi)",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants resulted in:",
+    "question_hi": "पौधों का domestication किस परिणाम में हुआ?",
+    "options": [
+      "Organized agriculture",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Organized agriculture",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a beverage crop obtained from seeds of Theobroma cacao?",
+    "question_hi": "निम्नलिखित में से कौन सी पेय फसल Theobroma cacao के बीजों से प्राप्त होती है?",
+    "options": [
+      "Cocoa",
+      "Coffee",
+      "Tea",
+      "Wine grape"
+    ],
+    "answer": "Cocoa",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Finger millet is scientifically known as:",
+    "question_hi": "रागी (Finger millet) का वैज्ञानिक नाम क्या है?",
+    "options": [
+      "Eleusine coracana",
+      "Zea mays",
+      "Oryza sativa",
+      "Triticum aestivum"
+    ],
+    "answer": "Eleusine coracana",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which cereal is called \"Nutritious millet\"?",
+    "question_hi": "किस अनाज को \"Nutritious millet\" कहा जाता है?",
+    "options": [
+      "Finger millet",
+      "Rice",
+      "Wheat",
+      "Maize"
+    ],
+    "answer": "Finger millet",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Domestication of plants helped in:",
+    "question_hi": "पौधों का domestication किसमें सहायक रहा?",
+    "options": [
+      "Development of trade",
+      "Decline of farming",
+      "Wild food increase",
+      "Nomadic lifestyle"
+    ],
+    "answer": "Development of trade",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Which of the following is a spice crop obtained from underground stem?",
+    "question_hi": "निम्नलिखित में से कौन सी मसाला फसल भूमिगत तने से प्राप्त होती है?",
+    "options": [
+      "Ginger",
+      "Turmeric",
+      "Garlic",
+      "All of the above"
+    ],
+    "answer": "Ginger",
+    "test_only": true
+  },
+  {
+    "subject": "Botany",
+    "semester": 4,
+    "unit": "Unit I - Origin and domestication of cultivated plants",
+    "question": "Millets belong to which family?",
+    "question_hi": "बाजरा किस कुल (family) से संबंधित है?",
+    "options": [
+      "Poaceae",
+      "Fabaceae",
+      "Solanaceae",
+      "Rubiaceae"
+    ],
+    "answer": "Poaceae",
+    "test_only": true
   }
 ]

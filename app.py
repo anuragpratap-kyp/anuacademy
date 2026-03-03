@@ -3,9 +3,12 @@ import os
 import random
 import sqlite3
 import csv
+import re
+import smtplib
 from io import StringIO
 from datetime import datetime
 from pathlib import Path
+from email.message import EmailMessage
 from flask import Flask, Response, jsonify, redirect, render_template, request, url_for
 
 try:
@@ -24,8 +27,12 @@ GALLERY_DIR = Path(__file__).with_name("static") / "gallery"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 ACTIVE_SEMESTER = 4
 TOTAL_SEMESTERS = 6
-TEST_QUESTION_LIMIT = 25
-TEST_DURATION_MINUTES = 25
+QUIZ_QUESTION_LIMIT = 25
+QUIZ_DURATION_MINUTES = 25
+SUBJECT_TEST_QUESTION_LIMIT = int(os.environ.get("SUBJECT_TEST_QUESTION_LIMIT") or 20)
+SUBJECT_TEST_DURATION_MINUTES = int(os.environ.get("SUBJECT_TEST_DURATION_MINUTES") or 20)
+SUBJECT_TEST_OPEN_TIME = (os.environ.get("SUBJECT_TEST_OPEN_TIME") or "").strip()  # HH:MM, e.g. 10:00
+SUBJECT_TEST_CLOSE_TIME = (os.environ.get("SUBJECT_TEST_CLOSE_TIME") or "").strip()  # HH:MM, e.g. 12:00
 
 COURSES = [
     {"slug": "ba", "label": "B.A"},
@@ -41,6 +48,12 @@ SOCIAL_LINKS = {
     "linkedin": (os.environ.get("SOCIAL_LINKEDIN_URL") or "https://www.linkedin.com/").strip(),
 }
 NOTICE_HOST_KEY = (os.environ.get("NOTICE_HOST_KEY") or "").strip()
+SMTP_HOST = (os.environ.get("SMTP_HOST") or "").strip()
+SMTP_PORT = int(os.environ.get("SMTP_PORT") or 587)
+SMTP_USERNAME = (os.environ.get("SMTP_USERNAME") or "").strip()
+SMTP_PASSWORD = (os.environ.get("SMTP_PASSWORD") or "").strip()
+SMTP_USE_TLS = (os.environ.get("SMTP_USE_TLS", "1") or "1").strip() not in {"0", "false", "False"}
+SMTP_FROM_EMAIL = (os.environ.get("SMTP_FROM_EMAIL") or SMTP_USERNAME).strip()
 
 COURSE_SUBJECTS = {
     "ba": [
@@ -127,7 +140,71 @@ def get_subject_semester_questions(subject, semester):
     return [
         q for q in all_questions
         if q.get("subject") == subject and str(q.get("semester")) == str(semester)
+        and not bool(q.get("test_only"))
     ]
+
+
+def get_subject_semester_test_questions(subject, semester):
+    all_questions = load_questions()
+    return [
+        q for q in all_questions
+        if q.get("subject") == subject
+        and str(q.get("semester")) == str(semester)
+        and bool(q.get("test_only"))
+    ]
+
+
+def get_course_semester_test_questions(course_slug, semester):
+    clean_course_slug = normalize_course_slug(course_slug)
+    course_subject_names = {item["name"] for item in get_course_subjects(clean_course_slug)}
+    all_questions = load_questions()
+    return [
+        q for q in all_questions
+        if q.get("subject") in course_subject_names
+        and str(q.get("semester")) == str(semester)
+        and bool(q.get("test_only"))
+    ]
+
+
+def get_test_units_for_course_semester(course_slug, semester):
+    questions = attach_units(get_course_semester_test_questions(course_slug, semester))
+    units = []
+    for q in questions:
+        unit_name = q.get("unit", "").strip() or "General"
+        if unit_name not in units:
+            units.append(unit_name)
+    return units
+
+
+def get_default_test_target():
+    for course in COURSES:
+        clean_course_slug = normalize_course_slug(course["slug"])
+        for sem in get_active_semesters(clean_course_slug):
+            units = get_test_units_for_course_semester(clean_course_slug, sem)
+            if units:
+                return (clean_course_slug, sem, units[0])
+    return None
+
+
+def get_default_test_target_details():
+    target = get_default_test_target()
+    if not target:
+        return None
+
+    course_slug, semester, unit = target
+    unit_questions = [
+        q for q in attach_units(get_course_semester_test_questions(course_slug, semester))
+        if (q.get("unit") or "").strip() == unit
+    ]
+    subject_names = sorted({(q.get("subject") or "").strip() for q in unit_questions if (q.get("subject") or "").strip()})
+    subject_label = ", ".join(subject_names) if subject_names else "Subject Test"
+
+    return {
+        "course_slug": course_slug,
+        "semester": semester,
+        "unit": unit,
+        "subject_label": subject_label,
+    }
 
 
 def attach_units(questions):
@@ -224,6 +301,92 @@ def normalize_answer_text(value):
     return " ".join(str(value or "").split()).strip().casefold()
 
 
+def is_valid_email(email):
+    clean_email = (email or "").strip()
+    if not clean_email:
+        return False
+    return bool(re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", clean_email))
+
+
+def parse_hhmm(value):
+    clean_value = (value or "").strip()
+    if not clean_value:
+        return None
+    try:
+        return datetime.strptime(clean_value, "%H:%M").time()
+    except ValueError:
+        return None
+
+
+def get_subject_test_window_status(now=None):
+    open_time_obj = parse_hhmm(SUBJECT_TEST_OPEN_TIME)
+    close_time_obj = parse_hhmm(SUBJECT_TEST_CLOSE_TIME)
+    now_dt = now or datetime.now()
+    now_time = now_dt.time()
+
+    if not open_time_obj or not close_time_obj:
+        return {
+            "enabled": False,
+            "is_open": True,
+            "open_label": SUBJECT_TEST_OPEN_TIME or "-",
+            "close_label": SUBJECT_TEST_CLOSE_TIME or "-",
+            "now_label": now_dt.strftime("%H:%M"),
+        }
+
+    if open_time_obj <= close_time_obj:
+        is_open = open_time_obj <= now_time <= close_time_obj
+    else:
+        # Supports overnight windows like 22:00 to 02:00.
+        is_open = now_time >= open_time_obj or now_time <= close_time_obj
+
+    return {
+        "enabled": True,
+        "is_open": is_open,
+        "open_label": open_time_obj.strftime("%H:%M"),
+        "close_label": close_time_obj.strftime("%H:%M"),
+        "now_label": now_dt.strftime("%H:%M"),
+    }
+
+
+def send_test_score_email(to_email, student_name, subject, semester, score, total, percentage, result_status):
+    target = (to_email or "").strip()
+    if not target:
+        return (False, "missing_email")
+    if not is_valid_email(target):
+        return (False, "invalid_email")
+
+    smtp_ready = all([SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL])
+    if not smtp_ready:
+        return (False, "smtp_not_configured")
+
+    msg = EmailMessage()
+    msg["Subject"] = f"Your Test Score - {subject} (Sem {semester})"
+    msg["From"] = SMTP_FROM_EMAIL
+    msg["To"] = target
+    msg.set_content(
+        (
+            f"Hello {student_name},\n\n"
+            f"Your test result is ready.\n"
+            f"Subject: {subject}\n"
+            f"Semester: {semester}\n"
+            f"Score: {score}/{total}\n"
+            f"Percentage: {percentage}%\n"
+            f"Result: {result_status}\n\n"
+            "Thank you."
+        )
+    )
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
+            if SMTP_USE_TLS:
+                server.starttls()
+            server.login(SMTP_USERNAME, SMTP_PASSWORD)
+            server.send_message(msg)
+        return (True, "sent")
+    except Exception:
+        return (False, "send_failed")
+
+
 def fetchone_dict(conn, sql, params=()):
     cur = conn.cursor()
     cur.execute(query_with_placeholders(sql), params)
@@ -303,6 +466,25 @@ def init_db():
                 )
                 """,
             ).close()
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS test_entries (
+                    id SERIAL PRIMARY KEY,
+                    attempted_at TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    student_identifier TEXT NOT NULL,
+                    subject TEXT NOT NULL,
+                    class_name TEXT NOT NULL,
+                    course_slug TEXT NOT NULL,
+                    semester INTEGER NOT NULL,
+                    score INTEGER NOT NULL,
+                    total INTEGER NOT NULL,
+                    percentage REAL NOT NULL,
+                    result_status TEXT NOT NULL
+                )
+                """,
+            ).close()
 
             execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_id INTEGER").close()
             execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_name TEXT").close()
@@ -366,6 +548,25 @@ def init_db():
                     subject TEXT NOT NULL,
                     semester INTEGER NOT NULL,
                     unit TEXT NOT NULL,
+                    score INTEGER NOT NULL,
+                    total INTEGER NOT NULL,
+                    percentage REAL NOT NULL,
+                    result_status TEXT NOT NULL
+                )
+                """,
+            ).close()
+            execute_sql(
+                conn,
+                """
+                CREATE TABLE IF NOT EXISTS test_entries (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    attempted_at TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    student_identifier TEXT NOT NULL,
+                    subject TEXT NOT NULL,
+                    class_name TEXT NOT NULL,
+                    course_slug TEXT NOT NULL,
+                    semester INTEGER NOT NULL,
                     score INTEGER NOT NULL,
                     total INTEGER NOT NULL,
                     percentage REAL NOT NULL,
@@ -494,6 +695,45 @@ def save_attempt(
     conn.commit()
     conn.close()
     return student_id
+
+
+def save_test_entry(
+    name,
+    student_identifier,
+    subject,
+    class_name,
+    course_slug,
+    semester,
+    score,
+    total,
+    percentage,
+    result_status,
+):
+    conn = get_db_connection()
+    execute_sql(
+        conn,
+        """
+        INSERT INTO test_entries (
+            attempted_at, name, student_identifier, subject, class_name,
+            course_slug, semester, score, total, percentage, result_status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            (name or "").strip(),
+            (student_identifier or "").strip(),
+            (subject or "").strip(),
+            (class_name or "").strip(),
+            (course_slug or "").strip(),
+            int(semester),
+            int(score),
+            int(total),
+            float(percentage),
+            (result_status or "").strip(),
+        ),
+    ).close()
+    conn.commit()
+    conn.close()
 
 
 def get_leaderboard_rows(conn, subject_filter="all", limit=10):
@@ -813,6 +1053,58 @@ def get_attempts_for_export(subject_filter="all"):
     return rows
 
 
+def get_test_entries(limit=200):
+    conn = get_db_connection()
+    rows = fetchall_dicts(
+        conn,
+        """
+        SELECT
+            attempted_at,
+            name,
+            student_identifier,
+            subject,
+            class_name,
+            course_slug,
+            semester,
+            score,
+            total,
+            percentage,
+            result_status
+        FROM test_entries
+        ORDER BY id DESC
+        LIMIT ?
+        """,
+        (int(limit),),
+    )
+    conn.close()
+    return rows
+
+
+def get_test_entries_for_export():
+    conn = get_db_connection()
+    rows = fetchall_dicts(
+        conn,
+        """
+        SELECT
+            attempted_at,
+            name,
+            student_identifier,
+            subject,
+            class_name,
+            course_slug,
+            semester,
+            score,
+            total,
+            percentage,
+            result_status
+        FROM test_entries
+        ORDER BY id DESC
+        """,
+    )
+    conn.close()
+    return rows
+
+
 def add_notice(message):
     clean_message = " ".join((message or "").split()).strip()
     if not clean_message:
@@ -860,7 +1152,8 @@ init_db()
 @app.route("/")
 def home():
     notices = get_active_notices(limit=5)
-    return render_template("index.html", notices=notices)
+    default_test = get_default_test_target_details()
+    return render_template("index.html", notices=notices, default_test=default_test)
 
 
 @app.route("/notices", methods=["POST"])
@@ -895,9 +1188,12 @@ def host_notices():
 @app.route("/courses")
 def courses():
     course_cards = []
+    test_course_slug = "bsc"
     for course in COURSES:
         slug = course["slug"]
         active_semesters = get_active_semesters(slug)
+        if active_semesters and test_course_slug == "bsc":
+            test_course_slug = slug
         course_cards.append(
             {
                 "slug": slug,
@@ -905,7 +1201,7 @@ def courses():
                 "active_semesters": active_semesters,
             }
         )
-    return render_template("courses.html", courses=course_cards)
+    return render_template("courses.html", courses=course_cards, test_course_slug=test_course_slug)
 
 
 @app.route("/semesters")
@@ -972,6 +1268,286 @@ def quiz_redirect(subject, semester, course_slug="bsc"):
     )
 
 
+@app.route("/test/<course_slug>")
+def test_semesters(course_slug):
+    clean_course_slug = normalize_course_slug(course_slug)
+    return render_template(
+        "test_semesters.html",
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+        active_semesters=get_active_semesters(clean_course_slug),
+        total_semesters=TOTAL_SEMESTERS,
+    )
+
+
+@app.route("/test")
+@app.route("/test/start")
+def test_start():
+    target = get_default_test_target()
+    if not target:
+        return redirect(url_for("courses"))
+    course_slug, semester, unit = target
+    return redirect(url_for("subject_test", course_slug=course_slug, semester=semester, unit=unit))
+
+
+@app.route("/test/<course_slug>/<int:semester>")
+def test_units_by_semester(course_slug, semester):
+    clean_course_slug = normalize_course_slug(course_slug)
+    if semester not in get_active_semesters(clean_course_slug):
+        return redirect(url_for("test_semesters", course_slug=clean_course_slug))
+
+    units = get_test_units_for_course_semester(clean_course_slug, semester)
+    return render_template(
+        "test_units.html",
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+        semester=semester,
+        units=units,
+    )
+
+
+@app.route("/test/<course_slug>/<int:semester>/<unit>", methods=["GET", "POST"])
+def subject_test(course_slug, semester, unit):
+    clean_course_slug = normalize_course_slug(course_slug)
+    if semester not in get_active_semesters(clean_course_slug):
+        return redirect(url_for("test_semesters", course_slug=clean_course_slug))
+
+    all_semester_test_questions = [
+        q for q in attach_units(get_course_semester_test_questions(clean_course_slug, semester))
+        if q.get("unit", "").strip() == unit
+    ]
+    subject_names = sorted({(q.get("subject") or "").strip() for q in all_semester_test_questions if (q.get("subject") or "").strip()})
+    subject_label = ", ".join(subject_names) if subject_names else "Subject Test"
+
+    test_window = get_subject_test_window_status()
+    if test_window["enabled"] and not test_window["is_open"]:
+        return render_template(
+            "test_locked.html",
+            unit=unit,
+            subject_label=subject_label,
+            semester=semester,
+            course_slug=clean_course_slug,
+            course_label=COURSE_LABELS[clean_course_slug],
+            test_window=test_window,
+        )
+
+    selected_indices = list(range(len(all_semester_test_questions)))
+
+    if request.method == "POST":
+        test_window = get_subject_test_window_status()
+        if test_window["enabled"] and not test_window["is_open"]:
+            return render_template(
+                "test_locked.html",
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_window=test_window,
+            )
+
+        raw_order = (request.form.get("question_order") or "").strip()
+        parsed_indices = []
+        if raw_order:
+            seen = set()
+            for token in raw_order.split(","):
+                token = token.strip()
+                if not token.isdigit():
+                    continue
+                idx = int(token)
+                if idx in seen:
+                    continue
+                if 0 <= idx < len(all_semester_test_questions):
+                    parsed_indices.append(idx)
+                    seen.add(idx)
+        if not parsed_indices:
+            return render_template(
+                "test.html",
+                questions=[],
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order="",
+                error_message="Test session mismatch detected. Please restart this test.",
+            )
+        selected_indices = parsed_indices
+    else:
+        random.shuffle(selected_indices)
+
+    selected_indices = selected_indices[:SUBJECT_TEST_QUESTION_LIMIT]
+    questions = [all_semester_test_questions[i] for i in selected_indices]
+    question_order = ",".join(str(i) for i in selected_indices)
+
+    if request.method == "POST":
+        name = (request.form.get("name") or "").strip()
+        student_identifier = (request.form.get("student_identifier") or "").strip()
+        class_name = (request.form.get("class_name") or "").strip()
+        subject_entry = (request.form.get("subject_entry") or subject_label).strip()
+        email = (request.form.get("email") or "").strip()
+
+        if not name:
+            return render_template(
+                "test.html",
+                questions=questions,
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order=question_order,
+                error_message="Please enter your name.",
+            )
+        if not student_identifier:
+            return render_template(
+                "test.html",
+                questions=questions,
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order=question_order,
+                error_message="Please enter your student ID.",
+            )
+        if not class_name:
+            return render_template(
+                "test.html",
+                questions=questions,
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order=question_order,
+                error_message="Please enter your class.",
+            )
+        if normalize_answer_text(subject_entry) != normalize_answer_text(subject_label):
+            return render_template(
+                "test.html",
+                questions=questions,
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order=question_order,
+                error_message="Subject mismatch detected. Please restart this test.",
+            )
+        if not email:
+            return render_template(
+                "test.html",
+                questions=questions,
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order=question_order,
+                error_message="Please enter your email.",
+            )
+        if not is_valid_email(email):
+            return render_template(
+                "test.html",
+                questions=questions,
+                unit=unit,
+                subject_label=subject_label,
+                semester=semester,
+                course_slug=clean_course_slug,
+                course_label=COURSE_LABELS[clean_course_slug],
+                test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+                test_window=test_window,
+                question_order=question_order,
+                error_message="Please enter a valid email address.",
+            )
+
+        score = 0
+        total = len(questions)
+        for i, q in enumerate(questions):
+            submitted = request.form.get(f"q{i}")
+            expected = q.get("answer")
+            if normalize_answer_text(submitted) == normalize_answer_text(expected):
+                score += 1
+
+        percentage = round((score / total) * 100, 2) if total > 0 else 0
+        result_status = "Pass" if percentage >= 33 else "Fail"
+        save_test_entry(
+            name=name,
+            student_identifier=student_identifier,
+            subject=subject_entry,
+            class_name=class_name,
+            course_slug=clean_course_slug,
+            semester=semester,
+            score=score,
+            total=total,
+            percentage=percentage,
+            result_status=result_status,
+        )
+        email_sent, email_status = send_test_score_email(
+            to_email=email,
+            student_name=name,
+            subject=subject_entry,
+            semester=semester,
+            score=score,
+            total=total,
+            percentage=percentage,
+            result_status=result_status,
+        )
+
+        return render_template(
+            "result.html",
+            score=score,
+            total=total,
+            percentage=percentage,
+            result_status=result_status,
+            subject=subject_label,
+            semester=semester,
+            unit=unit,
+            course_slug=clean_course_slug,
+            course_label=COURSE_LABELS[clean_course_slug],
+            student_name=name,
+            subject_rank=None,
+            subject_total_students=None,
+            overall_rank=None,
+            overall_total_students=None,
+            subject_percentile=None,
+            overall_percentile=None,
+            show_leaderboard=False,
+            is_test_result=True,
+            email=email,
+            email_sent=email_sent,
+            email_status=email_status,
+            test_start_url=url_for("test_start"),
+        )
+
+    return render_template(
+        "test.html",
+        questions=questions,
+        unit=unit,
+        subject_label=subject_label,
+        semester=semester,
+        course_slug=clean_course_slug,
+        course_label=COURSE_LABELS[clean_course_slug],
+        test_duration_minutes=SUBJECT_TEST_DURATION_MINUTES,
+        test_window=test_window,
+        question_order=question_order,
+        error_message="",
+    )
+
+
 @app.route("/quiz/<course_slug>/<subject>/<int:semester>/<unit>", methods=["GET", "POST"])
 @app.route("/quiz/<subject>/<int:semester>/<unit>", methods=["GET", "POST"])
 def quiz(subject, semester, unit, course_slug="bsc"):
@@ -1006,7 +1582,7 @@ def quiz(subject, semester, unit, course_slug="bsc"):
                 unit=unit,
                 course_slug=clean_course_slug,
                 course_label=COURSE_LABELS[clean_course_slug],
-                test_duration_minutes=TEST_DURATION_MINUTES,
+                test_duration_minutes=QUIZ_DURATION_MINUTES,
                 question_order=question_order,
                 error_message="Quiz session mismatch detected. Please restart this test.",
             )
@@ -1014,7 +1590,7 @@ def quiz(subject, semester, unit, course_slug="bsc"):
     else:
         random.shuffle(selected_indices)
 
-    selected_indices = selected_indices[:TEST_QUESTION_LIMIT]
+    selected_indices = selected_indices[:QUIZ_QUESTION_LIMIT]
     questions = [unit_questions[i] for i in selected_indices]
     question_order = ",".join(str(i) for i in selected_indices)
 
@@ -1030,7 +1606,7 @@ def quiz(subject, semester, unit, course_slug="bsc"):
                 unit=unit,
                 course_slug=clean_course_slug,
                 course_label=COURSE_LABELS[clean_course_slug],
-                test_duration_minutes=TEST_DURATION_MINUTES,
+                test_duration_minutes=QUIZ_DURATION_MINUTES,
                 question_order=question_order,
                 error_message="Please enter your name.",
             )
@@ -1043,7 +1619,7 @@ def quiz(subject, semester, unit, course_slug="bsc"):
                 unit=unit,
                 course_slug=clean_course_slug,
                 course_label=COURSE_LABELS[clean_course_slug],
-                test_duration_minutes=TEST_DURATION_MINUTES,
+                test_duration_minutes=QUIZ_DURATION_MINUTES,
                 question_order=question_order,
                 error_message="Mobile number must be exactly 10 digits.",
             )
@@ -1103,7 +1679,7 @@ def quiz(subject, semester, unit, course_slug="bsc"):
         unit=unit,
         course_slug=clean_course_slug,
         course_label=COURSE_LABELS[clean_course_slug],
-        test_duration_minutes=TEST_DURATION_MINUTES,
+        test_duration_minutes=QUIZ_DURATION_MINUTES,
         question_order=question_order,
         error_message="",
     )
@@ -1149,6 +1725,55 @@ def dashboard_export_csv():
         output.getvalue(),
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@app.route("/test-entries")
+def test_entries():
+    rows = get_test_entries(limit=300)
+    return render_template("test_entries.html", rows=rows)
+
+
+@app.route("/test-entries/export.csv")
+def test_entries_export_csv():
+    rows = get_test_entries_for_export()
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Attempted At",
+        "Name",
+        "Student ID",
+        "Subject",
+        "Class",
+        "Course",
+        "Semester",
+        "Score",
+        "Total",
+        "Percentage",
+        "Result",
+    ])
+    for row in rows:
+        writer.writerow(
+            [
+                row.get("attempted_at") or "",
+                row.get("name") or "",
+                row.get("student_identifier") or "",
+                row.get("subject") or "",
+                row.get("class_name") or "",
+                row.get("course_slug") or "",
+                row.get("semester") or "",
+                row.get("score") or "",
+                row.get("total") or "",
+                row.get("percentage") or "",
+                row.get("result_status") or "",
+            ]
+        )
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=test_entries_report.csv"},
     )
 
 

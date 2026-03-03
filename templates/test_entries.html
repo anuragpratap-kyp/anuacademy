@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block title %}Test Entries{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="dashboard-header leaderboard-header analytics-header">
+        <h2>Test Entries</h2>
+        <p>Separate records collected from Subject Test submissions.</p>
+    </div>
+
+    <div class="export-actions">
+        <a class="btn export-btn" href="{{ url_for('test_entries_export_csv') }}">Download Test CSV</a>
+        <button type="button" class="btn export-btn export-btn-secondary" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <div class="quiz-box leaderboard-box" style="overflow-x: auto;">
+        {% if rows %}
+        <table class="leaderboard-table attempts-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Subject</th>
+                    <th>Class</th>
+                    <th>Course</th>
+                    <th>Semester</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row['attempted_at'] }}</td>
+                    <td>{{ row['name'] }}</td>
+                    <td>{{ row['student_identifier'] }}</td>
+                    <td>{{ row['subject'] }}</td>
+                    <td>{{ row['class_name'] }}</td>
+                    <td>{{ row['course_slug']|upper }}</td>
+                    <td>{{ row['semester'] }}</td>
+                    <td>{{ row['score'] }}/{{ row['total'] }} ({{ row['percentage']|round(2) }}%)</td>
+                    <td>{{ row['result_status'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="leaderboard-empty">No test entries found yet.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

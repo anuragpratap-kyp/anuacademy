@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Test Locked{% endblock %}
+
+{% block content %}
+<section class="quiz-shell">
+    <h2 class="page-title">{{ course_label }} | {{ subject_label }} - Semester {{ semester }} - {{ unit }} Test</h2>
+    <div class="quiz-box" style="text-align:center;">
+        <p><strong>Test is currently closed.</strong></p>
+        <p>Allowed time: <strong>{{ test_window.open_label }}</strong> to <strong>{{ test_window.close_label }}</strong></p>
+        <p>Current server time: <strong>{{ test_window.now_label }}</strong></p>
+        <a href="{{ url_for('test_units_by_semester', course_slug=course_slug, semester=semester) }}" class="btn">Back to Test Units</a>
+    </div>
+</section>
+{% endblock %}

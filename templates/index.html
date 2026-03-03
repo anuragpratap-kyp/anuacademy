@@ -24,18 +24,56 @@
 <section class="notice-board-section">
     <div class="section-title">
         <h2>Notice Board</h2>
-        <p>Latest updates and announcements.</p>
+        <p>Latest updates, announcements and quick actions.</p>
     </div>
 
     <div class="notice-board-wrap">
-        <div class="notice-board-card">
-            <h3>Quick Start</h3>
-            <a
-                class="btn notice-quick-link"
-                href="{{ url_for('quiz', course_slug='bsc', subject='Botany', semester=4, unit='Unit I - Origin and domestication of cultivated plants') }}"
-            >
-                Start Semester 4 Unit 1 MCQ
-            </a>
+        <div class="notice-board-card notice-board-card-primary">
+            <div class="notice-card-head">
+                <h3>Live Notices</h3>
+                <span class="notice-live-badge">Live</span>
+            </div>
+            {% if notices %}
+            <ul class="notice-list">
+                {% for notice in notices %}
+                <li>
+                    <span class="notice-message">{{ notice['message'] }}</span>
+                    <span class="notice-time">{{ notice['created_at'] }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="notice-empty">No active notices yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="notice-board-card notice-board-card-secondary">
+            <h3>Quick Actions</h3>
+            <p class="notice-helper">Jump directly into the most-used sections.</p>
+            <div class="notice-quick-actions">
+                <a
+                    class="btn notice-quick-link"
+                    href="{{ url_for('quiz', course_slug='bsc', subject='Botany', semester=4, unit='Unit I - Origin and domestication of cultivated plants') }}"
+                >
+                    Start Semester 4 Unit 1 Test
+                </a>
+                <a class="btn notice-quick-link notice-quick-link-alt" href="{{ url_for('courses') }}">
+                    Open Courses
+                </a>
+                {% if default_test %}
+                <a
+                    class="btn notice-quick-link notice-quick-link-alt"
+                    href="{{ url_for('subject_test', course_slug=default_test.course_slug, semester=default_test.semester, unit=default_test.unit) }}"
+                    title="{{ default_test.subject_label }} | {{ default_test.unit }}"
+                >
+                    Test: {{ default_test.subject_label }} | {{ default_test.unit }}
+                </a>
+                {% else %}
+                <a class="btn notice-quick-link notice-quick-link-alt" href="{{ url_for('test_start') }}">
+                    Start Test
+                </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </section>
