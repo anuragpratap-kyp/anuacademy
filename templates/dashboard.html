@@ -4,9 +4,9 @@
 {% block content %}
 <section class="dashboard-section">
 
-    <div class="dashboard-header leaderboard-header">
-        <h2>Your Performance Leaderboard</h2>
-        <p>Top 10 rankings based on best score and consistency.</p>
+    <div class="dashboard-header leaderboard-header analytics-header">
+        <h2>Leaderboard & Performance Analytics</h2>
+        <p>Top scorers and progress insights from MCQ attempts.</p>
     </div>
 
     <form method="get" action="{{ url_for('dashboard') }}" class="leaderboard-filter">
@@ -19,8 +19,52 @@
         </select>
         <button type="submit" class="btn leaderboard-filter-btn">Apply</button>
     </form>
+    <div class="export-actions">
+        <a class="btn export-btn" href="{{ url_for('dashboard_export_csv', subject=selected_subject) }}">Download CSV Report</a>
+        <button type="button" class="btn export-btn export-btn-secondary" onclick="window.print()">Print / Save PDF</button>
+    </div>
+
+    <div class="stats-container dashboard-stats">
+        <div class="stat-card">
+            <h3>Total Attempts</h3>
+            <p class="stat-number">{{ total_attempts }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Average Score</h3>
+            <p class="stat-number">{{ avg_percentage }}%</p>
+        </div>
+        <div class="stat-card">
+            <h3>Best Score</h3>
+            <p class="stat-number">{{ best_percentage }}%</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pass Rate</h3>
+            <p class="stat-number">{{ pass_rate }}%</p>
+        </div>
+    </div>
+
+    <div class="quiz-box leaderboard-box top-scorers-box">
+        <h3 class="analytics-title">Top Scorers</h3>
+        {% if top_three_students %}
+        <div class="top-scorers-grid">
+            {% for row in top_three_students %}
+            <div class="top-scorer-card">
+                <span class="rank-badge {% if loop.index == 1 %}rank-gold{% elif loop.index == 2 %}rank-silver{% else %}rank-bronze{% endif %}">
+                    {% if loop.index == 1 %}1st{% elif loop.index == 2 %}2nd{% else %}3rd{% endif %}
+                </span>
+                <h4>{{ row['student_name'] }}</h4>
+                <p>Best: <strong>{{ row['top_percentage']|round(2) }}%</strong></p>
+                <p>Avg: {{ row['avg_percentage']|round(2) }}% | Attempts: {{ row['attempts'] }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="leaderboard-empty">No top scorer data yet.</p>
+        {% endif %}
+    </div>
 
     <div class="quiz-box leaderboard-box" style="overflow-x: auto;">
+        <h3 class="analytics-title">Top 10 Leaderboard</h3>
         {% if top_students %}
         <table class="leaderboard-table">
             <thead>
@@ -59,5 +103,137 @@
         {% endif %}
     </div>
 
+    <div class="analytics-grid">
+        <div class="quiz-box chart-box">
+            <h3 class="analytics-title">Progress Trend</h3>
+            <canvas id="progressTrendChart"></canvas>
+        </div>
+        <div class="quiz-box chart-box">
+            <h3 class="analytics-title">Subject-wise Average</h3>
+            <canvas id="subjectAverageChart"></canvas>
+        </div>
+        <div class="quiz-box chart-box">
+            <h3 class="analytics-title">Score Distribution</h3>
+            <canvas id="scoreDistributionChart"></canvas>
+        </div>
+    </div>
+
+    <div class="quiz-box leaderboard-box recent-attempts-box" style="overflow-x: auto;">
+        <h3 class="analytics-title">Recent Attempts</h3>
+        {% if recent_attempts %}
+        <table class="leaderboard-table attempts-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Unit</th>
+                    <th>Score</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in recent_attempts %}
+                <tr>
+                    <td>{{ row['attempted_at'] }}</td>
+                    <td>{{ row['student_name'] or 'Unknown' }}</td>
+                    <td>{{ row['subject'] }} (Sem {{ row['semester'] }})</td>
+                    <td>{{ row['unit'] }}</td>
+                    <td>{{ row['score'] }}/{{ row['total'] }} ({{ row['percentage']|round(2) }}%)</td>
+                    <td>{{ row['result_status'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="leaderboard-empty">No attempt history found yet.</p>
+        {% endif %}
+    </div>
+
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const trendLabels = {{ trend_labels|tojson }};
+    const trendAttempts = {{ trend_attempt_counts|tojson }};
+    const trendAvgScores = {{ trend_avg_scores|tojson }};
+    const subjectLabels = {{ subject_labels|tojson }};
+    const subjectAvgValues = {{ subject_avg_values|tojson }};
+    const distributionLabels = {{ distribution_labels|tojson }};
+    const distributionValues = {{ distribution_values|tojson }};
+
+    function maybeRenderChart(canvasId, configBuilder) {
+        const el = document.getElementById(canvasId);
+        if (!el || typeof Chart === "undefined") return;
+        new Chart(el, configBuilder(el.getContext("2d")));
+    }
+
+    maybeRenderChart("progressTrendChart", () => ({
+        type: "line",
+        data: {
+            labels: trendLabels,
+            datasets: [
+                {
+                    label: "Avg Score %",
+                    data: trendAvgScores,
+                    borderColor: "#1f6fb2",
+                    backgroundColor: "rgba(31, 111, 178, 0.18)",
+                    yAxisID: "y",
+                    tension: 0.35,
+                    fill: true
+                },
+                {
+                    label: "Attempts",
+                    data: trendAttempts,
+                    borderColor: "#2f89d9",
+                    backgroundColor: "rgba(47, 137, 217, 0.16)",
+                    yAxisID: "y1",
+                    tension: 0.25
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 100, title: { display: true, text: "Score %" } },
+                y1: { beginAtZero: true, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Attempts" } }
+            }
+        }
+    }));
+
+    maybeRenderChart("subjectAverageChart", () => ({
+        type: "bar",
+        data: {
+            labels: subjectLabels,
+            datasets: [{
+                label: "Average %",
+                data: subjectAvgValues,
+                backgroundColor: ["#1f6fb2", "#2f89d9", "#4aa1e8", "#78b8ef", "#9fd0f5"],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, max: 100 } }
+        }
+    }));
+
+    maybeRenderChart("scoreDistributionChart", () => ({
+        type: "doughnut",
+        data: {
+            labels: distributionLabels,
+            datasets: [{
+                data: distributionValues,
+                backgroundColor: ["#d9534f", "#f0ad4e", "#5bc0de", "#3fa66b"],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    }));
+</script>
 {% endblock %}

@@ -2,7 +2,15 @@ const body = document.body;
 const navToggle = document.querySelector(".nav-toggle");
 const navLinks = document.querySelector(".nav-links");
 const navBackdrop = document.querySelector(".nav-backdrop");
+const navClose = document.querySelector(".nav-close");
+const siteHeader = document.querySelector(".site-header");
 let scrollYBeforeNavOpen = 0;
+
+function updateHeaderOnScroll() {
+    if (!siteHeader) return;
+    const isScrolled = (window.scrollY || window.pageYOffset || 0) > 12;
+    siteHeader.classList.toggle("is-scrolled", isScrolled);
+}
 
 function lockBodyScroll() {
     scrollYBeforeNavOpen = window.scrollY || window.pageYOffset || 0;
@@ -49,6 +57,9 @@ if (navToggle && navLinks && navBackdrop) {
     });
 
     navBackdrop.addEventListener("click", closeNavMenu);
+    if (navClose) {
+        navClose.addEventListener("click", closeNavMenu);
+    }
 
     navLinks.querySelectorAll("a").forEach((link) => {
         link.addEventListener("click", closeNavMenu);
@@ -66,3 +77,6 @@ if (navToggle && navLinks && navBackdrop) {
         }
     });
 }
+
+window.addEventListener("scroll", updateHeaderOnScroll, { passive: true });
+updateHeaderOnScroll();

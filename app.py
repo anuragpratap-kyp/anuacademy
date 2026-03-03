@@ -2,9 +2,11 @@ import json
 import os
 import random
 import sqlite3
+import csv
+from io import StringIO
 from datetime import datetime
 from pathlib import Path
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, Response, redirect, render_template, request, url_for
 
 try:
     import psycopg2
@@ -30,6 +32,12 @@ COURSES = [
 ]
 
 COURSE_LABELS = {course["slug"]: course["label"] for course in COURSES}
+
+SOCIAL_LINKS = {
+    "instagram": (os.environ.get("SOCIAL_INSTAGRAM_URL") or "https://www.instagram.com/").strip(),
+    "youtube": (os.environ.get("SOCIAL_YOUTUBE_URL") or "https://www.youtube.com/").strip(),
+    "linkedin": (os.environ.get("SOCIAL_LINKEDIN_URL") or "https://www.linkedin.com/").strip(),
+}
 
 COURSE_SUBJECTS = {
     "ba": [
@@ -173,6 +181,11 @@ def get_active_semesters(course_slug):
     return COURSE_ACTIVE_SEMESTERS.get(normalize_course_slug(course_slug), [])
 
 
+@app.context_processor
+def inject_global_template_context():
+    return {"social_links": SOCIAL_LINKS}
+
+
 def normalize_database_url(url):
     if url.startswith("postgres://"):
         return url.replace("postgres://", "postgresql://", 1)
@@ -274,6 +287,18 @@ def init_db():
 
             execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_id INTEGER").close()
             execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_name TEXT").close()
+            execute_sql(conn, "ALTER TABLE attempts ADD COLUMN IF NOT EXISTS student_mobile TEXT").close()
+
+            execute_sql(
+                conn,
+                """
+                UPDATE attempts
+                SET student_mobile = students.mobile
+                FROM students
+                WHERE attempts.student_id = students.id
+                  AND (attempts.student_mobile IS NULL OR attempts.student_mobile = '')
+                """,
+            ).close()
         else:
             execute_sql(
                 conn,
@@ -309,6 +334,22 @@ def init_db():
                 execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_id INTEGER").close()
             if "student_name" not in attempt_cols:
                 execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_name TEXT").close()
+            if "student_mobile" not in attempt_cols:
+                execute_sql(conn, "ALTER TABLE attempts ADD COLUMN student_mobile TEXT").close()
+
+            execute_sql(
+                conn,
+                """
+                UPDATE attempts
+                SET student_mobile = (
+                    SELECT students.mobile
+                    FROM students
+                    WHERE students.id = attempts.student_id
+                )
+                WHERE (student_mobile IS NULL OR student_mobile = '')
+                  AND student_id IS NOT NULL
+                """,
+            ).close()
 
         conn.commit()
     finally:
@@ -365,8 +406,8 @@ def save_attempt(
         """
         INSERT INTO attempts (
             attempted_at, subject, semester, unit, score, total, percentage, result_status,
-            student_id, student_name
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            student_id, student_name, student_mobile
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -379,6 +420,7 @@ def save_attempt(
             result_status,
             student_id,
             (student_name or "").strip(),
+            (student_mobile or "").strip(),
         ),
     ).close()
     conn.commit()
@@ -449,14 +491,35 @@ def get_percentile(rank, total_students):
 def get_dashboard_data(subject_filter="all"):
     conn = get_db_connection()
     clean_subject_filter = (subject_filter or "all").strip()
+    analytics_filters = []
+    analytics_params = []
 
-    total_attempts = fetchone_dict(conn, "SELECT COUNT(*) AS count FROM attempts")["count"]
-    avg_percentage = fetchone_dict(conn, "SELECT AVG(percentage) AS value FROM attempts")["value"] or 0
-    best_percentage = fetchone_dict(conn, "SELECT MAX(percentage) AS value FROM attempts")["value"] or 0
+    if clean_subject_filter != "all":
+        analytics_filters.append("subject = ?")
+        analytics_params.append(clean_subject_filter)
+
+    analytics_where = "WHERE " + " AND ".join(analytics_filters) if analytics_filters else ""
+
+    total_attempts = fetchone_dict(
+        conn,
+        f"SELECT COUNT(*) AS count FROM attempts {analytics_where}",
+        tuple(analytics_params),
+    )["count"]
+    avg_percentage = fetchone_dict(
+        conn,
+        f"SELECT AVG(percentage) AS value FROM attempts {analytics_where}",
+        tuple(analytics_params),
+    )["value"] or 0
+    best_percentage = fetchone_dict(
+        conn,
+        f"SELECT MAX(percentage) AS value FROM attempts {analytics_where}",
+        tuple(analytics_params),
+    )["value"] or 0
     pass_count = fetchone_dict(
         conn,
-        "SELECT COUNT(*) AS count FROM attempts WHERE result_status = 'Pass'",
-    )["count"]
+        f"SELECT COUNT(*) AS count FROM attempts {analytics_where}{' AND ' if analytics_where else ' WHERE '}result_status = 'Pass'",
+        tuple(analytics_params),
+    )["count"] or 0
     pass_rate = round((pass_count / total_attempts) * 100, 2) if total_attempts else 0
 
     best_subject_row = fetchone_dict(
@@ -464,6 +527,7 @@ def get_dashboard_data(subject_filter="all"):
         """
         SELECT subject, AVG(percentage) AS avg_score
         FROM attempts
+        WHERE subject IS NOT NULL AND subject != ''
         GROUP BY subject
         ORDER BY avg_score DESC
         LIMIT 1
@@ -475,6 +539,7 @@ def get_dashboard_data(subject_filter="all"):
         """
         SELECT subject, AVG(percentage) AS avg_score
         FROM attempts
+        WHERE subject IS NOT NULL AND subject != ''
         GROUP BY subject
         ORDER BY avg_score ASC
         LIMIT 1
@@ -490,6 +555,7 @@ def get_dashboard_data(subject_filter="all"):
             AVG(percentage) AS avg_percentage,
             SUM(CASE WHEN result_status = 'Pass' THEN 1 ELSE 0 END) AS passed
         FROM attempts
+        WHERE subject IS NOT NULL AND subject != ''
         GROUP BY subject
         ORDER BY attempts DESC, subject ASC
         """,
@@ -497,13 +563,15 @@ def get_dashboard_data(subject_filter="all"):
 
     recent_attempts = fetchall_dicts(
         conn,
-        """
+        f"""
         SELECT attempted_at, subject, semester, unit, score, total, percentage, result_status,
                student_name
         FROM attempts
+        {analytics_where}
         ORDER BY id DESC
         LIMIT 10
         """,
+        tuple(analytics_params),
     )
 
     subject_options_rows = fetchall_dicts(
@@ -520,6 +588,55 @@ def get_dashboard_data(subject_filter="all"):
         clean_subject_filter = "all"
 
     top_students = get_leaderboard_rows(conn, subject_filter=clean_subject_filter, limit=10)
+    top_three_students = top_students[:3]
+
+    trend_rows = fetchall_dicts(
+        conn,
+        f"""
+        SELECT
+            substr(attempted_at, 1, 10) AS attempt_day,
+            COUNT(*) AS attempts,
+            AVG(percentage) AS avg_percentage
+        FROM attempts
+        {analytics_where}
+        GROUP BY attempt_day
+        ORDER BY attempt_day ASC
+        """,
+        tuple(analytics_params),
+    )
+    trend_rows = trend_rows[-12:]
+
+    distribution_row = fetchone_dict(
+        conn,
+        f"""
+        SELECT
+            SUM(CASE WHEN percentage < 33 THEN 1 ELSE 0 END) AS fail_band,
+            SUM(CASE WHEN percentage >= 33 AND percentage < 60 THEN 1 ELSE 0 END) AS low_band,
+            SUM(CASE WHEN percentage >= 60 AND percentage < 80 THEN 1 ELSE 0 END) AS good_band,
+            SUM(CASE WHEN percentage >= 80 THEN 1 ELSE 0 END) AS excellent_band
+        FROM attempts
+        {analytics_where}
+        """,
+        tuple(analytics_params),
+    ) or {}
+
+    if clean_subject_filter == "all":
+        subject_chart_rows = subject_stats
+    else:
+        subject_chart_rows = fetchall_dicts(
+            conn,
+            """
+            SELECT
+                subject,
+                COUNT(*) AS attempts,
+                AVG(percentage) AS avg_percentage
+            FROM attempts
+            WHERE subject = ?
+            GROUP BY subject
+            ORDER BY subject ASC
+            """,
+            (clean_subject_filter,),
+        )
 
     conn.close()
 
@@ -533,9 +650,45 @@ def get_dashboard_data(subject_filter="all"):
         "subject_stats": subject_stats,
         "recent_attempts": recent_attempts,
         "top_students": top_students,
+        "top_three_students": top_three_students,
+        "trend_labels": [row["attempt_day"] for row in trend_rows],
+        "trend_attempt_counts": [int(row["attempts"] or 0) for row in trend_rows],
+        "trend_avg_scores": [round(float(row["avg_percentage"] or 0), 2) for row in trend_rows],
+        "distribution_labels": ["<33%", "33-59%", "60-79%", "80%+"],
+        "distribution_values": [
+            int(distribution_row.get("fail_band") or 0),
+            int(distribution_row.get("low_band") or 0),
+            int(distribution_row.get("good_band") or 0),
+            int(distribution_row.get("excellent_band") or 0),
+        ],
+        "subject_labels": [row["subject"] for row in subject_chart_rows],
+        "subject_avg_values": [round(float(row["avg_percentage"] or 0), 2) for row in subject_chart_rows],
         "subject_options": subject_options,
         "selected_subject": clean_subject_filter,
     }
+
+
+def get_attempts_for_export(subject_filter="all"):
+    clean_subject_filter = (subject_filter or "all").strip()
+    conn = get_db_connection()
+    params = []
+    where_clause = ""
+    if clean_subject_filter != "all":
+        where_clause = "WHERE subject = ?"
+        params.append(clean_subject_filter)
+
+    rows = fetchall_dicts(
+        conn,
+        f"""
+        SELECT attempted_at, subject, semester, unit, student_name, score, total, percentage, result_status
+        FROM attempts
+        {where_clause}
+        ORDER BY id DESC
+        """,
+        tuple(params),
+    )
+    conn.close()
+    return rows
 
 
 init_db()
@@ -760,6 +913,37 @@ def dashboard():
     selected_subject = request.args.get("subject", "all")
     stats = get_dashboard_data(selected_subject)
     return render_template("dashboard.html", **stats)
+
+
+@app.route("/dashboard/export.csv")
+def dashboard_export_csv():
+    selected_subject = request.args.get("subject", "all")
+    rows = get_attempts_for_export(selected_subject)
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Attempted At", "Subject", "Semester", "Unit", "Student Name", "Score", "Total", "Percentage", "Result"])
+    for row in rows:
+        writer.writerow(
+            [
+                row.get("attempted_at") or "",
+                row.get("subject") or "",
+                row.get("semester") or "",
+                row.get("unit") or "",
+                row.get("student_name") or "",
+                row.get("score") or "",
+                row.get("total") or "",
+                row.get("percentage") or "",
+                row.get("result_status") or "",
+            ]
+        )
+
+    filename = f"dashboard_report_{(selected_subject or 'all').replace(' ', '_').lower()}.csv"
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
 
 
 @app.route("/about")
