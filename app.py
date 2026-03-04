@@ -5,6 +5,10 @@ import sqlite3
 import csv
 import re
 import smtplib
+import base64
+import urllib.error
+import urllib.parse
+import urllib.request
 from io import StringIO
 from datetime import datetime
 from pathlib import Path
@@ -54,6 +58,15 @@ SMTP_USERNAME = (os.environ.get("SMTP_USERNAME") or "").strip()
 SMTP_PASSWORD = (os.environ.get("SMTP_PASSWORD") or "").strip()
 SMTP_USE_TLS = (os.environ.get("SMTP_USE_TLS", "1") or "1").strip() not in {"0", "false", "False"}
 SMTP_FROM_EMAIL = (os.environ.get("SMTP_FROM_EMAIL") or SMTP_USERNAME).strip()
+EMAIL_PROVIDER = (os.environ.get("EMAIL_PROVIDER") or "").strip().lower()
+RESEND_API_KEY = (os.environ.get("RESEND_API_KEY") or "").strip()
+RESEND_API_URL = (os.environ.get("RESEND_API_URL") or "https://api.resend.com/emails").strip()
+GMAIL_CLIENT_ID = (os.environ.get("GMAIL_CLIENT_ID") or "").strip()
+GMAIL_CLIENT_SECRET = (os.environ.get("GMAIL_CLIENT_SECRET") or "").strip()
+GMAIL_REFRESH_TOKEN = (os.environ.get("GMAIL_REFRESH_TOKEN") or "").strip()
+GMAIL_SENDER = (os.environ.get("GMAIL_SENDER") or "").strip()
+GMAIL_TOKEN_URL = (os.environ.get("GMAIL_TOKEN_URL") or "https://oauth2.googleapis.com/token").strip()
+GMAIL_SEND_URL = (os.environ.get("GMAIL_SEND_URL") or "https://gmail.googleapis.com/gmail/v1/users/me/messages/send").strip()
 
 COURSE_SUBJECTS = {
     "ba": [
@@ -355,6 +368,159 @@ def send_test_score_email(to_email, student_name, subject, semester, score, tota
     if not is_valid_email(target):
         return (False, "invalid_email")
 
+    subject_line = f"Your Test Score - {subject} (Sem {semester})"
+    body_text = (
+        f"Hello {student_name},\n\n"
+        f"Your test result is ready.\n"
+        f"Subject: {subject}\n"
+        f"Semester: {semester}\n"
+        f"Score: {score}/{total}\n"
+        f"Percentage: {percentage}%\n"
+        f"Result: {result_status}\n\n"
+        "Thank you."
+    )
+
+    use_gmail_api = EMAIL_PROVIDER == "gmail_api"
+    if use_gmail_api:
+        gmail_ready = all([GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN, GMAIL_SENDER])
+        if not gmail_ready:
+            missing_fields = []
+            if not GMAIL_CLIENT_ID:
+                missing_fields.append("GMAIL_CLIENT_ID")
+            if not GMAIL_CLIENT_SECRET:
+                missing_fields.append("GMAIL_CLIENT_SECRET")
+            if not GMAIL_REFRESH_TOKEN:
+                missing_fields.append("GMAIL_REFRESH_TOKEN")
+            if not GMAIL_SENDER:
+                missing_fields.append("GMAIL_SENDER")
+            app.logger.warning(
+                "Gmail API not configured. Missing fields: %s",
+                ", ".join(missing_fields) if missing_fields else "unknown",
+            )
+            return (False, "gmail_api_not_configured")
+
+        token_payload = urllib.parse.urlencode(
+            {
+                "client_id": GMAIL_CLIENT_ID,
+                "client_secret": GMAIL_CLIENT_SECRET,
+                "refresh_token": GMAIL_REFRESH_TOKEN,
+                "grant_type": "refresh_token",
+            }
+        ).encode("utf-8")
+        token_req = urllib.request.Request(
+            GMAIL_TOKEN_URL,
+            data=token_payload,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            method="POST",
+        )
+
+        try:
+            app.logger.info("Gmail token request url=%s sender=%s", GMAIL_TOKEN_URL, GMAIL_SENDER)
+            with urllib.request.urlopen(token_req, timeout=15) as token_response:
+                token_data = json.loads(token_response.read().decode("utf-8"))
+            access_token = (token_data.get("access_token") or "").strip()
+            if not access_token:
+                app.logger.error("Gmail token response missing access_token")
+                return (False, "gmail_api_failed")
+
+            raw_message = (
+                f"From: {GMAIL_SENDER}\r\n"
+                f"To: {target}\r\n"
+                f"Subject: {subject_line}\r\n"
+                "Content-Type: text/plain; charset=utf-8\r\n"
+                "\r\n"
+                f"{body_text}"
+            )
+            encoded_message = base64.urlsafe_b64encode(raw_message.encode("utf-8")).decode("ascii")
+            send_payload = json.dumps({"raw": encoded_message}).encode("utf-8")
+            send_req = urllib.request.Request(
+                GMAIL_SEND_URL,
+                data=send_payload,
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+
+            app.logger.info("Gmail send attempt url=%s from=%s to=%s", GMAIL_SEND_URL, GMAIL_SENDER, target)
+            with urllib.request.urlopen(send_req, timeout=15) as send_response:
+                status_code = getattr(send_response, "status", None) or send_response.getcode()
+            if 200 <= int(status_code) < 300:
+                return (True, "sent")
+            app.logger.error("Gmail send failed with non-success status code=%s", status_code)
+            return (False, "gmail_api_failed")
+        except urllib.error.HTTPError as exc:
+            error_body = ""
+            try:
+                error_body = exc.read().decode("utf-8", errors="ignore")
+            except Exception:
+                error_body = ""
+            app.logger.exception(
+                "Gmail API HTTP error status=%s reason=%s body=%s",
+                exc.code,
+                exc.reason,
+                error_body[:500],
+            )
+            return (False, "gmail_api_failed")
+        except Exception:
+            app.logger.exception("Gmail API send failed sender=%s to=%s", GMAIL_SENDER, target)
+            return (False, "gmail_api_failed")
+
+    use_resend = EMAIL_PROVIDER == "resend" or bool(RESEND_API_KEY)
+    if use_resend:
+        if not RESEND_API_KEY:
+            app.logger.warning("Resend not configured. Missing field: RESEND_API_KEY")
+            return (False, "email_api_not_configured")
+
+        from_email = SMTP_FROM_EMAIL or SMTP_USERNAME
+        if not from_email:
+            app.logger.warning("Resend not configured. Missing sender email in SMTP_FROM_EMAIL/SMTP_USERNAME")
+            return (False, "email_api_not_configured")
+
+        payload = json.dumps(
+            {
+                "from": from_email,
+                "to": [target],
+                "subject": subject_line,
+                "text": body_text,
+            }
+        ).encode("utf-8")
+        req = urllib.request.Request(
+            RESEND_API_URL,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {RESEND_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+
+        try:
+            app.logger.info("Resend send attempt url=%s from=%s to=%s", RESEND_API_URL, from_email, target)
+            with urllib.request.urlopen(req, timeout=15) as response:
+                status_code = getattr(response, "status", None) or response.getcode()
+            if 200 <= int(status_code) < 300:
+                return (True, "sent")
+            app.logger.error("Resend send failed with non-success status code=%s", status_code)
+            return (False, "email_api_failed")
+        except urllib.error.HTTPError as exc:
+            error_body = ""
+            try:
+                error_body = exc.read().decode("utf-8", errors="ignore")
+            except Exception:
+                error_body = ""
+            app.logger.exception(
+                "Resend HTTP error status=%s reason=%s body=%s",
+                exc.code,
+                exc.reason,
+                error_body[:500],
+            )
+            return (False, "email_api_failed")
+        except Exception:
+            app.logger.exception("Resend send failed url=%s to=%s", RESEND_API_URL, target)
+            return (False, "email_api_failed")
+
     smtp_ready = all([SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL])
     if not smtp_ready:
         missing_fields = []
@@ -375,21 +541,10 @@ def send_test_score_email(to_email, student_name, subject, semester, score, tota
         return (False, "smtp_not_configured")
 
     msg = EmailMessage()
-    msg["Subject"] = f"Your Test Score - {subject} (Sem {semester})"
+    msg["Subject"] = subject_line
     msg["From"] = SMTP_FROM_EMAIL
     msg["To"] = target
-    msg.set_content(
-        (
-            f"Hello {student_name},\n\n"
-            f"Your test result is ready.\n"
-            f"Subject: {subject}\n"
-            f"Semester: {semester}\n"
-            f"Score: {score}/{total}\n"
-            f"Percentage: {percentage}%\n"
-            f"Result: {result_status}\n\n"
-            "Thank you."
-        )
-    )
+    msg.set_content(body_text)
 
     try:
         app.logger.info(

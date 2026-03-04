@@ -21,6 +21,14 @@
             <p>Email not sent: mail service is not configured on server.</p>
             {% elif email_status == "send_failed" %}
             <p>Email not sent: delivery failed, please try later.</p>
+            {% elif email_status == "email_api_not_configured" %}
+            <p>Email not sent: email API is not configured on server.</p>
+            {% elif email_status == "email_api_failed" %}
+            <p>Email not sent: email service failed, please try again later.</p>
+            {% elif email_status == "gmail_api_not_configured" %}
+            <p>Email not sent: Gmail API is not configured on server.</p>
+            {% elif email_status == "gmail_api_failed" %}
+            <p>Email not sent: Gmail delivery failed, please try again later.</p>
             {% elif email_status == "invalid_email" %}
             <p>Email not sent: invalid email address.</p>
             {% endif %}
