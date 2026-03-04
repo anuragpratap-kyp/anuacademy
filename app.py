@@ -357,6 +357,21 @@ def send_test_score_email(to_email, student_name, subject, semester, score, tota
 
     smtp_ready = all([SMTP_HOST, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM_EMAIL])
     if not smtp_ready:
+        missing_fields = []
+        if not SMTP_HOST:
+            missing_fields.append("SMTP_HOST")
+        if not SMTP_PORT:
+            missing_fields.append("SMTP_PORT")
+        if not SMTP_USERNAME:
+            missing_fields.append("SMTP_USERNAME")
+        if not SMTP_PASSWORD:
+            missing_fields.append("SMTP_PASSWORD")
+        if not SMTP_FROM_EMAIL:
+            missing_fields.append("SMTP_FROM_EMAIL")
+        app.logger.warning(
+            "SMTP not configured. Missing fields: %s",
+            ", ".join(missing_fields) if missing_fields else "unknown",
+        )
         return (False, "smtp_not_configured")
 
     msg = EmailMessage()
@@ -377,6 +392,15 @@ def send_test_score_email(to_email, student_name, subject, semester, score, tota
     )
 
     try:
+        app.logger.info(
+            "SMTP send attempt host=%s port=%s tls=%s from=%s to=%s username=%s",
+            SMTP_HOST,
+            SMTP_PORT,
+            SMTP_USE_TLS,
+            SMTP_FROM_EMAIL,
+            target,
+            SMTP_USERNAME,
+        )
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as server:
             if SMTP_USE_TLS:
                 server.starttls()
@@ -384,6 +408,15 @@ def send_test_score_email(to_email, student_name, subject, semester, score, tota
             server.send_message(msg)
         return (True, "sent")
     except Exception:
+        app.logger.exception(
+            "SMTP send failed host=%s port=%s tls=%s from=%s to=%s username=%s",
+            SMTP_HOST,
+            SMTP_PORT,
+            SMTP_USE_TLS,
+            SMTP_FROM_EMAIL,
+            target,
+            SMTP_USERNAME,
+        )
         return (False, "send_failed")
 
 
