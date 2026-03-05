@@ -6,12 +6,12 @@
 <section class="hero">
     <div class="hero-container">
         <div class="hero-text">
-            <h1>Master Your Semester Exams</h1>
+            <h1>Your Smart Study Portal for Exams</h1>
             <p>
                 Practice unlimited MCQs semester-wise with instant results
                 and detailed performance tracking.
             </p>
-            <a href="/courses" class="btn">Start Practicing</a>
+            <a href="/courses" class="btn">Start Learning</a>
         </div>
 
         <div class="hero-image">
@@ -43,7 +43,12 @@
                 {% endfor %}
             </ul>
             {% else %}
-            <p class="notice-empty">No active notices yet.</p>
+            <ul class="notice-list">
+                <li>
+                    <span class="notice-message">Notice: Botany Semester 4 unit-1 test  is now live.</span>
+                    <span class="notice-time">Demo</span>
+                </li>
+            </ul>
             {% endif %}
         </div>
 
@@ -51,28 +56,22 @@
             <h3>Quick Actions</h3>
             <p class="notice-helper">Jump directly into the most-used sections.</p>
             <div class="notice-quick-actions">
-                <a
-                    class="btn notice-quick-link"
-                    href="{{ url_for('quiz', course_slug='bsc', subject='Botany', semester=4, unit='Unit I - Origin and domestication of cultivated plants') }}"
-                >
-                    Start Semester 4 Unit 1 Test
-                </a>
-                <a class="btn notice-quick-link notice-quick-link-alt" href="{{ url_for('courses') }}">
-                    Open Courses
-                </a>
                 {% if default_test %}
                 <a
-                    class="btn notice-quick-link notice-quick-link-alt"
+                    class="btn notice-quick-link"
                     href="{{ url_for('subject_test', course_slug=default_test.course_slug, semester=default_test.semester, unit=default_test.unit) }}"
                     title="{{ default_test.subject_label }} | {{ default_test.unit }}"
                 >
                     Test: {{ default_test.subject_label }} | {{ default_test.unit }}
                 </a>
                 {% else %}
-                <a class="btn notice-quick-link notice-quick-link-alt" href="{{ url_for('test_start') }}">
+                <a class="btn notice-quick-link" href="{{ url_for('test_start') }}">
                     Start Test
                 </a>
                 {% endif %}
+                <a class="btn notice-quick-link notice-quick-link-alt" href="{{ url_for('courses') }}">
+                    Open Courses
+                </a>
             </div>
         </div>
     </div>
@@ -81,7 +80,7 @@
 <!-- ================= FEATURES ================= -->
 <section class="features">
     <div class="section-title">
-        <h2>Why Choose SmartMCQ?</h2>
+        <h2>Why Choose Our Study Portal?</h2>
         <p>Everything you need to crack your semester exams.</p>
     </div>
 

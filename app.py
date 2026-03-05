@@ -13,7 +13,7 @@ from io import StringIO
 from datetime import datetime
 from pathlib import Path
 from email.message import EmailMessage
-from flask import Flask, Response, jsonify, redirect, render_template, request, url_for
+from flask import Flask, Response, abort, jsonify, redirect, render_template, request, url_for
 
 try:
     import psycopg2
@@ -359,6 +359,18 @@ def get_subject_test_window_status(now=None):
         "close_label": close_time_obj.strftime("%H:%M"),
         "now_label": now_dt.strftime("%H:%M"),
     }
+
+
+def is_host_authorized():
+    if not NOTICE_HOST_KEY:
+        return False
+    provided_key = (
+        request.args.get("host_key")
+        or request.form.get("host_key")
+        or request.headers.get("X-Host-Key")
+        or ""
+    ).strip()
+    return provided_key == NOTICE_HOST_KEY
 
 
 def send_test_score_email(to_email, student_name, subject, semester, score, total, percentage, result_status):
@@ -1333,7 +1345,10 @@ def deactivate_all_notices():
     conn.close()
 
 
-init_db()
+try:
+    init_db()
+except Exception:
+    app.logger.exception("Startup DB init failed")
 
 
 # ===== ROUTES =====
@@ -1882,7 +1897,14 @@ def result():
 def dashboard():
     selected_subject = request.args.get("subject", "all")
     stats = get_dashboard_data(selected_subject)
-    return render_template("dashboard.html", **stats)
+    host_key = (request.args.get("host_key") or "").strip()
+    can_view_test_entries = is_host_authorized()
+    return render_template(
+        "dashboard.html",
+        can_view_test_entries=can_view_test_entries,
+        host_key=host_key if can_view_test_entries else "",
+        **stats,
+    )
 
 
 @app.route("/dashboard/export.csv")
@@ -1918,12 +1940,16 @@ def dashboard_export_csv():
 
 @app.route("/test-entries")
 def test_entries():
+    if not is_host_authorized():
+        abort(403)
     rows = get_test_entries(limit=300)
     return render_template("test_entries.html", rows=rows)
 
 
 @app.route("/test-entries/export.csv")
 def test_entries_export_csv():
+    if not is_host_authorized():
+        abort(403)
     rows = get_test_entries_for_export()
 
     output = StringIO()
